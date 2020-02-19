@@ -1,0 +1,83 @@
+#   Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+"""Root REST adapter for the Honeywell Api."""
+
+from qiskit.qobj import Qobj
+
+from .base import RestAdapterBase
+from .backend import Backend
+from .job import Job
+
+
+class Api(RestAdapterBase):
+    """Rest adapter for general endpoints."""
+
+    URL_MAP = {
+        'backends': '/machine',
+        'job': '/job'
+    }
+
+    def backend(self, backend_name):
+        """Return an adapter for a specific backend.
+
+        Args:
+            backend_name (str): name of the backend.
+
+        Returns:
+            Backend: the backend adapter.
+        """
+        return Backend(self.session, backend_name)
+
+    def job(self, job_id):
+        """Return a adapter for a specific job.
+
+        Args:
+            job_id (str): id of the job.
+
+        Returns:
+            Job: the backend adapter.
+        """
+        return Job(self.session, job_id)
+
+    def backends(self):
+        """Return the list of backends."""
+        url = self.get_url('backends')
+        return self.session.get(url).json()
+
+    def submit_job(self, backend_name, qobj_config, qasm, name=None):
+        """Submit a job for executing.
+
+        Args:
+            backend_name (str): the name of the backend.
+            qobj_dict (dict): the Qobj to be executed, as a dictionary.
+
+        Returns:
+            dict: json response.
+        """
+        url = self.get_url('job')
+
+        payload = {
+            'machine': backend_name,
+            'count': qobj_config.get('shots', 1),
+            'language': 'OPENQASM 2.0',
+            'program': qasm,
+            'priority': qobj_config.get('priority', 'normal')
+            # TODO: Add compiler options here
+        }
+        if name:
+            payload['name'] = name
+
+        return self.session.post(url, json=payload).json()
+
