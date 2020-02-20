@@ -37,13 +37,25 @@ setuptools.setup(
     description="Qiskit provider for accessing the quantum devices at Honeywell",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url="https://co41-bitbucket.honeywell.lab:4443/projects/HQSSW/repos/qiskit-honeywell-provider/browse",
-    packages=['qiskit.providers.honeywell',
-              'qiskit.providers.honeywell.api',
-              'qiskit.providers.honeywell.api.rest'],
+    url="https://github.com/Qiskit/qiskit-honeywell-provider",
+    packages=setuptools.find_namespace_packages(include='qiskit.*'),
     install_requires=requirements,
+    project_urls={
+        "Bug Tracker": "https://github.com/Qiskit/qiskit-honeywell-provider/issues",
+        "Documentation": "https://qiskit.org/documentation/",
+        "Source Code": "https://github.com/Qiskit/qiskit-honeywell-provider"
+    },
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
         "Operating System :: OS Independent",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: MacOS",
+        "Operating System :: POSIX :: Linux",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Topic :: Scientific/Engineering"
     ],
 )
