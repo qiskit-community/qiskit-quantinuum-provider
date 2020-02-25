@@ -20,7 +20,7 @@ from requests.compat import urljoin
 from .session import RetrySession
 from .rest import Api
 
-_api_url = 'https://hqsapi.honeywell.com'
+_api_url = 'https://qapi.honeywell.com'
 _api_version = 'v1'
 
 
