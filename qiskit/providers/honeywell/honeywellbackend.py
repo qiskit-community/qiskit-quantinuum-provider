@@ -29,14 +29,15 @@ logger = logging.getLogger(__name__)
 class HoneywellBackend(BaseBackend):
     """Backend class interfacing with a Honeywell backend."""
 
-    def __init__(self, name, provider, api):
+    def __init__(self, name, configuration, provider, api):
         """Initialize remote backend for Honeywell Quantum Computer.
 
         Args:
             name (String): name of backend.
             provider (HoneywellProvider): provider.
         """
-        super().__init__(configuration=None, provider=provider)
+
+        super().__init__(configuration=configuration, provider=provider)
 
         self._api = api
         self._name = name

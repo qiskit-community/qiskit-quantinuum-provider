@@ -18,6 +18,7 @@ import logging
 from collections import OrderedDict
 
 from qiskit.providers import BaseProvider
+from qiskit.providers.models import BackendConfiguration
 
 from .api import HoneywellClient
 from .honeywellbackend import HoneywellBackend
@@ -65,12 +66,130 @@ class HoneywellProvider(BaseProvider):
             dict[str:HoneywellBackend]: a dict of the remote backend instances,
                 keyed by backend name.
         """
+        configuration = {
+            'backend_name': '',
+            'backend_version': '0.0.1',
+            'simulator': False,
+            'local': False,
+            'basis_gates': ['rx', 'ry', 'rz', 'cx', 'h'],
+            'memory': False,
+            'n_qubits': 0,
+            'conditional': True,
+            'max_shots': 10000,
+            'open_pulse': False,
+            'gates': [
+                {
+                    'name': 'x',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'y',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'z',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'CX',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'cx',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'h',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 's',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'sdg',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 't',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'tdg',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'rx',
+                    'parameters': ['theta'],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'ry',
+                    'parameters': ['theta'],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'rz',
+                    'parameters': ['phi'],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'cz',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'cy',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'ch',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'ccx',
+                    'parameters': [],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'crz',
+                    'parameters': ['lambda'],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'cu1',
+                    'parameters': ['lambda'],
+                    'qasm_def': 'TODO'
+                },
+                {
+                    'name': 'cu3',
+                    'parameters': ['theta', 'phi', 'lambda'],
+                    'qasm_def': 'TODO'
+                }
+            ],
+            'coupling_map': None
+        }
         ret = OrderedDict()
         machine_list = self._api.list_backends()
         for machine in machine_list:
             backend_cls = HoneywellBackend
-            ret[machine] = backend_cls(
-                name=machine,
+            configuration['backend_name'] = machine['name']
+            configuration['n_qubits'] = machine['n_qubits']
+            ret[machine['name']] = backend_cls(
+                name=machine['name'],
+                configuration=BackendConfiguration.from_dict(configuration),
                 provider=self,
                 api=self._api)
 

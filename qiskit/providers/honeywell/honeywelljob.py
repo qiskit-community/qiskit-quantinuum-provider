@@ -242,7 +242,7 @@ class HoneywellJob(BaseJob):
             if 'websocket' in api_response:
                 task_token = api_response['websocket']['task_token']
                 execution_arn = api_response['websocket']['executionArn']
-                websocket_uri = "wss://ws.hqsapi.honeywell.com/v1"
+                websocket_uri = "wss://ws.qapi.honeywell.com/v1"
                 async with websockets.connect(websocket_uri,
                     extra_headers={'x-api-key': self._api._request_access_token()}) as websocket:
                     body = {
@@ -279,7 +279,7 @@ class HoneywellJob(BaseJob):
         results = []
         self._status = JobStatus.DONE
         for i, res_resp in enumerate(self._experiment_results):
-            status = res_resp['status']
+            status = res_resp.get('status', 'failed')
             if status == 'failed':
                 self._status = JobStatus.ERROR
             res = res_resp['results']
@@ -287,7 +287,7 @@ class HoneywellJob(BaseJob):
 
             experiment_result = {
                 'shots': self._qobj_payload.get('config', {}).get('shots', 1),
-                'success': ApiJobStatus(status) is JobStatus.DONE,
+                'success': ApiJobStatus(status) is ApiJobStatus.COMPLETED,
                 'data': {'counts': counts},
                 'header': self._qobj_payload['experiments'][i]['header'] if self._qobj_payload else {},
                 'job_id': self._job_ids[i]
@@ -302,7 +302,6 @@ class HoneywellJob(BaseJob):
             'backend_version': self._backend.status().backend_version,
             'qobj_id': self._job_id
         }
-
         return Result.from_dict(result)
 
     def creation_date(self):

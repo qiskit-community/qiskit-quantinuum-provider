@@ -20,7 +20,7 @@ with open("README.md", "r") as fh:
 
 requirements = [
     'nest-asyncio>=1.2.0',
-    'qiskit-terra==0.8',
+    'qiskit-terra>=0.10',
     'requests>=2.19',
     'websockets>=8'
 ]

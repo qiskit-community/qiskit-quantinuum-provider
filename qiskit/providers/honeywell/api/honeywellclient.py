@@ -59,6 +59,8 @@ class HoneywellClient:
             self.client_api.session.access_token = self._request_access_token()
 
     def _request_access_token(self):
+        if self.has_token():
+            return self.client_api.session.access_token
         access_token = os.environ.get('HQS_API_KEY')
         if access_token is None:
             try:

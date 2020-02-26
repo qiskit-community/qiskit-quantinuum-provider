@@ -25,7 +25,7 @@ class Api(RestAdapterBase):
     """Rest adapter for general endpoints."""
 
     URL_MAP = {
-        'backends': '/machine',
+        'backends': '/machine?config=true',
         'job': '/job'
     }
 
