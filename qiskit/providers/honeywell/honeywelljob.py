@@ -244,7 +244,7 @@ class HoneywellJob(BaseJob):
                 execution_arn = api_response['websocket']['executionArn']
                 websocket_uri = "wss://ws.qapi.honeywell.com/v1"
                 async with websockets.connect(websocket_uri,
-                    extra_headers={'x-api-key': self._api._request_access_token()}) as websocket:
+                    extra_headers={'x-api-key': self._api.client_api.session.access_token}) as websocket:
                     body = {
                         "action": "OpenConnection",
                         "task_token": task_token,

@@ -38,6 +38,10 @@ class HoneywellAccountError(HoneywellError):
     """Base class for errors raised by account management."""
     pass
 
+class HoneywellCredentialsNotFound(HoneywellError):
+    """ Base class for errors found without credentials."""
+    pass
+
 
 class HoneywellBackendError(HoneywellError):
     """HoneywellBackend Errors"""

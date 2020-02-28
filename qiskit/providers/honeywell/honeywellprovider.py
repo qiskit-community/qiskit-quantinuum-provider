@@ -21,6 +21,8 @@ from qiskit.providers import BaseProvider
 from qiskit.providers.models import BackendConfiguration
 
 from .api import HoneywellClient
+from .credentials import discover_credentials, write_creds_to_qiskitrc, remove_creds_from_qiskitrc
+from .exceptions import HoneywellCredentialsNotFound
 from .honeywellbackend import HoneywellBackend
 
 
@@ -40,14 +42,34 @@ class HoneywellProvider(BaseProvider):
         # Populate the list of remote backends.
         self._backends = None
 
-    def authenticate(self, token=None):
-        """ Updates the API to use the provided token """
+    def load_account(self):
+        """ Obtain stored credentials """
+        credentials = discover_credentials()
+
+        if not credentials:
+            raise HoneywellCredentialsNotFound
+
+        self._api.authenticate(credentials)
+
+    def save_account(self, token, overwrite=False, filename=None):
+        """ Save the credentials onto disk """
         self._api.authenticate(token)
+        if filename:
+            write_creds_to_qiskitrc(token, overwrite, filename)
+        else:
+            write_creds_to_qiskitrc(token, overwrite)
+
+    def delete_credentials(self, filename=None):
+        """ Delete the credentials from disk """
+        if filename:
+            remove_creds_from_qiskitrc(filename)
+        else:
+            remove_creds_from_qiskitrc()
 
     def backends(self, name=None, filters=None, **kwargs):
         # pylint: disable=arguments-differ
         if not self._api.has_token():
-            self._api.authenticate()
+            self.load_account()
 
         if not self._backends:
             self._backends = self._discover_remote_backends()

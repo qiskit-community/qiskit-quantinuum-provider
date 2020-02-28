@@ -38,37 +38,19 @@ class HoneywellClient:
         Returns:
             Api: client for the api server.
         """
-        access_token = None
-        if 'HQS_API_KEY' in os.environ:
-            access_token = os.environ['HQS_API_KEY']
-
         service_url = urljoin(_api_url, _api_version)
 
-        # Create the api server client, using the access token.
-        client_api = Api(RetrySession(service_url, access_token))
+        # Create the api server client
+        client_api = Api(RetrySession(service_url))
 
         return client_api
     
     def has_token(self):
         return bool(self.client_api.session.access_token)
 
-    def authenticate(self, token=None):
-        if token:
-            self.client_api.session.access_token = token
-        else:
-            self.client_api.session.access_token = self._request_access_token()
+    def authenticate(self, token):
+        self.client_api.session.access_token = token
 
-    def _request_access_token(self):
-        if self.has_token():
-            return self.client_api.session.access_token
-        access_token = os.environ.get('HQS_API_KEY')
-        if access_token is None:
-            try:
-                input_fun = raw_input
-            except NameError:
-                input_fun = input
-            access_token = input_fun("API Key:")
-        return access_token
 
     # Backend-related public functions.
 
