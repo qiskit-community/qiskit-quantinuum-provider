@@ -24,7 +24,7 @@ class HoneywellCredentialsError(HoneywellError):
     pass
 
 DEFAULT_QISKITRC_FILE = os.path.join(os.path.expanduser("~"),
-                                     '.qiskit', 'qiskitrc')
+                                     '.qiskit', 'qhprc')
 SECTION_NAME = 'qiskit-honeywell-provider'
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ def read_creds_from_environ():
 
 def read_creds_from_qiskitrc(filename):
     """ Attempts to read credentials from qiskitrc file
-    The default qiskitrc location is in ``$HOME/.qiskitrc/qiskitrc``
+    The default qiskitrc location is in ``$HOME/.qiskitrc/qhprc``
     """
     config_parser = ConfigParser()
     try:
@@ -61,7 +61,7 @@ def read_creds_from_qiskitrc(filename):
 
 def write_creds_to_qiskitrc(token, overwrite=False, filename=DEFAULT_QISKITRC_FILE):
     """ Stores the credentials to qiskitrcc file
-    The default qiskitrc location is in ``$HOME/.qiskitrc/qiskitrc``
+    The default qiskitrc location is in ``$HOME/.qiskitrc/qhprc``
     """
     config_parser = ConfigParser()
     try:
@@ -77,7 +77,7 @@ def write_creds_to_qiskitrc(token, overwrite=False, filename=DEFAULT_QISKITRC_FI
 
 def remove_creds_from_qiskitrc(filename=DEFAULT_QISKITRC_FILE):
     """ Removes the credentials from the configuration file
-    The default qiskitrc location is in ``$HOME/.qiskitrc/qiskitrc``
+    The default qiskitrc location is in ``$HOME/.qiskitrc/qhprc``
     """
     config_parser = ConfigParser()
     try:
