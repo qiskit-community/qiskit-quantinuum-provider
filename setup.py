@@ -58,4 +58,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering"
     ],
+    zip_safe=False,
 )
