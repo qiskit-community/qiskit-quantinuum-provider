@@ -26,11 +26,12 @@
 
 """Honeywell TestCase for testing Providers."""
 
-from .. import ProviderTestCase
-
+from qiskit.test.providers import ProviderTestCase
 from qiskit.providers.honeywell import HoneywellProvider
 
+from .decorators import online_test
 
+@online_test
 class HoneywellProviderTestCase(ProviderTestCase):
     """Test case for Honeywell Provider.
 

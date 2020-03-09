@@ -30,17 +30,18 @@ from qiskit import execute
 from qiskit.providers.jobstatus import JobStatus
 from qiskit.result import Result
 
-from .. import BackendTestCase
-
 from qiskit.providers.honeywell import HoneywellProvider
 from qiskit.providers.honeywell.api import HoneywellClient
 from qiskit.providers.models import BackendStatus
 from qiskit.providers.honeywell import HoneywellJob
 
+from qiskit.test import QiskitTestCase
 from qiskit.providers.honeywell import HoneywellBackend
 
+from .decorators import online_test
 
-class HoneywellBackendTestCase(BackendTestCase):
+@online_test
+class HoneywellBackendTestCase(QiskitTestCase):
     """Test case for Honeywell backend.
 
     Members:
