@@ -34,7 +34,7 @@ requirements = [
     'nest-asyncio>=1.2.0',
     'qiskit-terra>=0.10',
     'requests>=2.19',
-    'websockets>=8'
+    'websockets>=7'
 ]
 
 version_str = '0.1.0'
