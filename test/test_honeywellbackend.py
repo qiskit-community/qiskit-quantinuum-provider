@@ -27,20 +27,22 @@
 """Honeywell TestCase for testing backends."""
 
 from qiskit import execute
+from qiskit import QuantumCircuit
 from qiskit.providers.jobstatus import JobStatus
-from qiskit.result import Result
-
-from .. import BackendTestCase
 
 from qiskit.providers.honeywell import HoneywellProvider
 from qiskit.providers.honeywell.api import HoneywellClient
 from qiskit.providers.models import BackendStatus
 from qiskit.providers.honeywell import HoneywellJob
 
+from qiskit.test import QiskitTestCase
 from qiskit.providers.honeywell import HoneywellBackend
 
+from .decorators import online_test
 
-class HoneywellBackendTestCase(BackendTestCase):
+
+@online_test
+class HoneywellBackendTestCase(QiskitTestCase):
     """Test case for Honeywell backend.
 
     Members:
@@ -57,9 +59,13 @@ class HoneywellBackendTestCase(BackendTestCase):
     backend_cls = HoneywellBackend
     backend_name = 'deadhead'
 
-    def _get_backend(self):
-        """Return an instance of a Backend."""
-        return self.backend_cls(name=self.backend_name, provider=self.provider_cls(), api=self.api_cls())
+    def setUp(self):
+        provider = self.provider_cls()
+        self.backend = provider.get_backend(self.backend_name)
+        self.circuit = QuantumCircuit(2)
+        self.circuit.h(0)
+        self.circuit.cx(0, 1)
+        self.circuit.measure_all()
 
     def test_configuration(self):
         """Test backend.configuration()."""
@@ -123,6 +129,7 @@ class HoneywellBackendTestCase(BackendTestCase):
         self.assertIsNotNone(job_id)
 
     def test_job_with_id(self):
+        """Test creating a job with an id."""
         job = self._submit_job()
         job_id = job.job_id()
         job_created_with_id = HoneywellJob(self.backend, job_id, self.api_cls())

@@ -26,8 +26,6 @@
 
 """Root REST adapter for the Honeywell Api."""
 
-from qiskit.qobj import Qobj
-
 from .base import RestAdapterBase
 from .backend import Backend
 from .job import Job
@@ -73,23 +71,24 @@ class Api(RestAdapterBase):
 
         Args:
             backend_name (str): the name of the backend.
-            qobj_dict (dict): the Qobj to be executed, as a dictionary.
+            qobj_config (dict): the Qobj to be executed, as a dictionary.
+            qasm (str): The qasm str to submit
+            name (str): An optional name for the job
 
         Returns:
             dict: json response.
         """
         url = self.get_url('job')
 
+        # TODO: Add compiler options to the payload
         payload = {
             'machine': backend_name,
             'count': qobj_config.get('shots', 1),
             'language': 'OPENQASM 2.0',
             'program': qasm,
             'priority': qobj_config.get('priority', 'normal')
-            # TODO: Add compiler options here
         }
         if name:
             payload['name'] = name
 
         return self.session.post(url, json=payload).json()
-

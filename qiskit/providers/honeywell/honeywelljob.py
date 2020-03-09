@@ -24,6 +24,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# pylint: disable=arguments-differ
+
 """HoneywellJob module
 
 This module is used for creating asynchronous job objects for Honeywell.
@@ -31,25 +33,18 @@ This module is used for creating asynchronous job objects for Honeywell.
 import asyncio
 import json
 import logging
-import pprint
-import time
-from concurrent import futures
 from collections import Counter
 from datetime import datetime, timezone
 import nest_asyncio
 import websockets
 
 from qiskit.assembler.disassemble import disassemble
-from qiskit.providers import BaseJob, JobError, JobTimeoutError
+from qiskit.providers import BaseJob, JobError
 from qiskit.providers.jobstatus import JOB_FINAL_STATES, JobStatus
-from qiskit.qobj import Qobj, validate_qobj_against_schema
+from qiskit.qobj import validate_qobj_against_schema
 from qiskit.result import Result
-from qiskit.result.models import ExperimentResult, ExperimentResultData
-from qiskit.validation.base import Obj
 
 from .apiconstants import ApiJobStatus
-from .api.exceptions import ApiError
-from .api import HoneywellClient
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +52,7 @@ logger = logging.getLogger(__name__)
 # (via Tornado), we must be able to apply our own event loop. This is something that is done
 # in the IBMQ provider as well
 nest_asyncio.apply()
+
 
 class HoneywellJob(BaseJob):
     """Representation of a job that will be execute on a Honeywell backend.
@@ -172,20 +168,16 @@ class HoneywellJob(BaseJob):
         """Submit the job to the backend."""
         backend_name = self.backend().name()
 
-        try:
-            for exp in self._experiments:
-                submit_info = self._api.job_submit(backend_name, self._qobj_config, exp.qasm())
-                # Error in job after submission:
-                # Transition to the `ERROR` final state.
-                if 'error' in submit_info:
-                    self._status = JobStatus.ERROR
-                    self._api_error_msg = str(submit_info['error'])
-                    # Don't continue
-                    return
-                self._job_ids.append(submit_info['job'])
-        except Exception as err:
-            # TODO
-            print(f'Exception in job submit: {err}')
+        for exp in self._experiments:
+            submit_info = self._api.job_submit(backend_name, self._qobj_config, exp.qasm())
+            # Error in job after submission:
+            # Transition to the `ERROR` final state.
+            if 'error' in submit_info:
+                self._status = JobStatus.ERROR
+                self._api_error_msg = str(submit_info['error'])
+                # Don't continue
+                return
+            self._job_ids.append(submit_info['job'])
 
         # Take the last submitted job's info
         self._creation_date = submit_info.get('submit-date')
@@ -197,7 +189,6 @@ class HoneywellJob(BaseJob):
 
         Args:
            timeout (float): number of seconds to wait for job
-           wait (int): time between queries to Honeywell server
 
         Returns:
             qiskit.Result: Result object
@@ -219,7 +210,7 @@ class HoneywellJob(BaseJob):
             self._experiment_results.append(
                 asyncio.get_event_loop().run_until_complete(self.status(job_id, timeout))
                 )
-        
+
         # Process results
         self._result = self._process_results()
 
@@ -255,8 +246,10 @@ class HoneywellJob(BaseJob):
                 task_token = api_response['websocket']['task_token']
                 execution_arn = api_response['websocket']['executionArn']
                 websocket_uri = "wss://ws.qapi.honeywell.com/v1"
-                async with websockets.connect(websocket_uri,
-                    extra_headers={'x-api-key': self._api.client_api.session.access_token}) as websocket:
+                async with websockets.connect(
+                        websocket_uri, extra_headers={
+                            'x-api-key': self._api.client_api.session.access_token}) as websocket:
+
                     body = {
                         "action": "OpenConnection",
                         "task_token": task_token,
@@ -277,9 +270,9 @@ class HoneywellJob(BaseJob):
         Returns:
             str: An error report if the job errored or ``None`` otherwise.
         """
-        self._wait_for_final_status()
-        if self.status() is not JobStatus.ERROR:
-            return None
+        for job_id in self._job_ids:
+            if self.status(job_id) is not JobStatus.ERROR:
+                return None
 
         if not self._api_error_msg:
             self._api_error_msg = 'An unknown error occurred.'
@@ -301,7 +294,8 @@ class HoneywellJob(BaseJob):
                 'shots': self._qobj_payload.get('config', {}).get('shots', 1),
                 'success': ApiJobStatus(status) is ApiJobStatus.COMPLETED,
                 'data': {'counts': counts},
-                'header': self._qobj_payload['experiments'][i]['header'] if self._qobj_payload else {},
+                'header': self._qobj_payload[
+                    'experiments'][i]['header'] if self._qobj_payload else {},
                 'job_id': self._job_ids[i]
             }
             results.append(experiment_result)

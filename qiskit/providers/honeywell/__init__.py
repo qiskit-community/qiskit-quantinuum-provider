@@ -28,7 +28,7 @@
 
 from .honeywellprovider import HoneywellProvider
 from .honeywellbackend import HoneywellBackend
-from .honeywelljob import  HoneywellJob
+from .honeywelljob import HoneywellJob
 
 # Global instance to be used as the entry point for convenience.
-Honeywell = HoneywellProvider()
+Honeywell = HoneywellProvider()  # pylint: disable=invalid-name

@@ -78,8 +78,7 @@ class HoneywellProvider(BaseProvider):
         else:
             remove_creds_from_qiskitrc()
 
-    def backends(self, name=None, filters=None, **kwargs):
-        # pylint: disable=arguments-differ
+    def backends(self, name=None, **kwargs):
         if not self._api.has_token():
             self.load_account()
 

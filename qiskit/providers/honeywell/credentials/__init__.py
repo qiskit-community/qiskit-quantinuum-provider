@@ -31,14 +31,16 @@ import os
 
 from ..exceptions import HoneywellError
 
-class HoneywellCredentialsError(HoneywellError):
-    """ Base class for errors raised during credential management """
-    pass
-
 DEFAULT_QISKITRC_FILE = os.path.join(os.path.expanduser("~"),
                                      '.qiskit', 'qhprc')
 SECTION_NAME = 'qiskit-honeywell-provider'
 logger = logging.getLogger(__name__)
+
+
+class HoneywellCredentialsError(HoneywellError):
+    """ Base class for errors raised during credential management """
+    pass
+
 
 def discover_credentials(qiskitrc_filename=DEFAULT_QISKITRC_FILE):
     """ Automatically discover credentials from qiskitrc file or environment variables """
@@ -56,9 +58,11 @@ def discover_credentials(qiskitrc_filename=DEFAULT_QISKITRC_FILE):
             logger.warning('Automatic discovery failed: %s', str(ex))
     return creds
 
+
 def read_creds_from_environ():
     """ Attempts to read credentials from environment variable """
     return os.getenv('HON_QIS_API')
+
 
 def read_creds_from_qiskitrc(filename):
     """ Attempts to read credentials from qiskitrc file
@@ -70,6 +74,7 @@ def read_creds_from_qiskitrc(filename):
     except ParsingError as ex:
         raise HoneywellCredentialsError(str(ex))
     return config_parser.get(SECTION_NAME, 'API_KEY', fallback=None)
+
 
 def write_creds_to_qiskitrc(token, overwrite=False, filename=DEFAULT_QISKITRC_FILE):
     """ Stores the credentials to qiskitrcc file
@@ -87,6 +92,7 @@ def write_creds_to_qiskitrc(token, overwrite=False, filename=DEFAULT_QISKITRC_FI
     with open(filename, 'w') as conf_file:
         config_parser.write(conf_file)
 
+
 def remove_creds_from_qiskitrc(filename=DEFAULT_QISKITRC_FILE):
     """ Removes the credentials from the configuration file
     The default qiskitrc location is in ``$HOME/.qiskitrc/qhprc``
@@ -96,9 +102,9 @@ def remove_creds_from_qiskitrc(filename=DEFAULT_QISKITRC_FILE):
         config_parser.read(filename)
     except ParsingError as ex:
         raise HoneywellCredentialsError(str(ex))
-    if not (config_parser.has_section(SECTION_NAME) and config_parser.get(SECTION_NAME, 'API_KEY')):
+    if not (config_parser.has_section(SECTION_NAME) and config_parser.get(SECTION_NAME,
+                                                                          'API_KEY')):
         return
     config_parser.remove_option(SECTION_NAME, 'API_KEY')
     with open(filename, 'w') as conf_file:
         config_parser.write(conf_file)
-
