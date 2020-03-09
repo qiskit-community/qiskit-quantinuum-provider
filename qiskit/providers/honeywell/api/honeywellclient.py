@@ -26,14 +26,13 @@
 
 """Client for accessing Honeywell."""
 
-import os
 from requests.compat import urljoin
 
 from .session import RetrySession
 from .rest import Api
 
-_api_url = 'https://qapi.honeywell.com'
-_api_version = 'v1'
+_API_URL = 'https://qapi.honeywell.com'
+_API_VERSION = 'v1'
 
 
 class HoneywellClient:
@@ -50,22 +49,22 @@ class HoneywellClient:
         Returns:
             Api: client for the api server.
         """
-        service_url = urljoin(_api_url, _api_version)
+        service_url = urljoin(_API_URL, _API_VERSION)
 
         # Create the api server client
         client_api = Api(RetrySession(service_url))
 
         return client_api
-    
+
     def has_token(self):
+        """Check if a token has been aquired."""
         return bool(self.client_api.session.access_token)
 
     def authenticate(self, token):
+        """Authenticate against the API and aquire a token."""
         self.client_api.session.access_token = token
 
-
     # Backend-related public functions.
-
     def list_backends(self):
         """Return a list of backends.
 
@@ -92,7 +91,8 @@ class HoneywellClient:
 
         Args:
             backend_name (str): the name of the backend.
-            qobj_dict (dict): the Qobj to be executed, as a dictionary.
+            qobj_config (dict): the Qobj to be executed, as a dictionary.
+            qasm (str): the qasm string of the job to submit
 
         Returns:
             dict: job status.

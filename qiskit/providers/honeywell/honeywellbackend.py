@@ -46,7 +46,10 @@ class HoneywellBackend(BaseBackend):
 
         Args:
             name (String): name of backend.
+            configuration (BackendConfiguration): backend configuration
             provider (HoneywellProvider): provider.
+            api (HoneywellClient): API client instance to use for backend
+                communication
         """
 
         super().__init__(configuration=configuration, provider=provider)

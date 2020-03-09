@@ -26,8 +26,6 @@
 
 """Job REST adapter for the Honeywell Api"""
 
-import json
-
 from .base import RestAdapterBase
 
 

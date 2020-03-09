@@ -49,6 +49,7 @@ class RestAdapterBase:
         """RestAdapterBase constructor.
 
         Args:
+            session (Session): The session instance to use
             prefix_url (str): string to be prefixed to all urls.
         """
         self.session = session

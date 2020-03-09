@@ -129,7 +129,7 @@ class RetrySession(Session):
         self.proxies = proxies or {}
         self.verify = verify
 
-    def request(self, method, url, **kwargs):
+    def request(self, method, url, **kwargs):  # pylint: disable=arguments-differ
         """Constructs a Request, prepending the base url.
 
         Args:
