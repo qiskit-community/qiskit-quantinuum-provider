@@ -37,3 +37,17 @@ steps:
 - script: |
     tox -e%TOXENV%
   displayName: 'Run tests'
+
+- bash: |
+    set -e
+    pip install -U junitxml
+    mkdir -p junit
+    stestr last --subunit | tools/subunit_to_junit.py -o junit/test-results.xml
+  condition: succeededOrFailed()
+  displayName: 'Generate results'
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: '**/test-*.xml'
+    testRunTitle: 'Test results for Windows Python $(python.version)'
