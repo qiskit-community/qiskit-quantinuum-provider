@@ -62,7 +62,7 @@ tox -epy37 -- -n test.test_honeywell_credentials.TestCredentials.test_discover_c
 
 Some tests require that you have a Honeywell account configured. These tests
 will be skipped if no credentials are available. If you want to run these tests
-you need to have credentials configured either via the `HQS_TOKEN` environment
+you need to have credentials configured either via the `HQS_API_KEY` environment
 variable, or via a saved account locally. If you do not want to run these tests
 but have configured credentials you can set the `QISKIT_TEST_SKIP_ONLINE` to
 `True` (or `1`) and the online tests will also be skipped.
