@@ -26,6 +26,8 @@
 
 """Backends provided by Honeywell."""
 
+from .version import __version__
+
 from .honeywellprovider import HoneywellProvider
 from .honeywellbackend import HoneywellBackend
 from .honeywelljob import HoneywellJob

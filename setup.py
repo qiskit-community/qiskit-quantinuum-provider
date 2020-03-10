@@ -37,27 +37,35 @@ requirements = [
     'websockets>=7'
 ]
 
-version_str = '0.1.0'
-if os.environ.get('BRANCH_NAME', '') == 'dev':
-    version_str += '.dev' + os.environ.get('BUILD_NUMBER', 9999)
+version_path = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), 'qiskit', 'providers', 'honeywell',
+    'VERSION.txt'))
+
+with open(version_path, 'r') as fd:
+    version_str = fd.read().rstrip()
 
 setuptools.setup(
     name="qiskit-honeywell-provider",
     version=version_str,
     author="Honeywell",
     author_email="jack.suen@honeywell.com",
+    license="Apache 2.0",
     description="Qiskit provider for accessing the quantum devices at Honeywell",
     long_description=long_description,
     long_description_content_type='text/markdown',
     url="https://github.com/Qiskit/qiskit-honeywell-provider",
-    packages=setuptools.find_namespace_packages(include='qiskit.*'),
+    packages=setuptools.find_namespace_packages(include=['qiskit.*']),
     install_requires=requirements,
+    python_requires=">=3.5",
+    include_package_data=True,
+    keywords="qiskit quantum",
     project_urls={
         "Bug Tracker": "https://github.com/Qiskit/qiskit-honeywell-provider/issues",
         "Documentation": "https://qiskit.org/documentation/",
         "Source Code": "https://github.com/Qiskit/qiskit-honeywell-provider"
     },
     classifiers=[
+        "License :: OSI Approved :: Apache Software License",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "Operating System :: OS Independent",
@@ -65,6 +73,7 @@ setuptools.setup(
         "Operating System :: MacOS",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
