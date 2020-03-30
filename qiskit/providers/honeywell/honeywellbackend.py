@@ -28,8 +28,7 @@
 
 import logging
 
-from marshmallow import ValidationError
-
+from qiskit.exceptions import QiskitError
 from qiskit.providers import BaseBackend
 from qiskit.providers.models import BackendStatus
 
@@ -93,7 +92,7 @@ class HoneywellBackend(BaseBackend):
 
         try:
             return BackendStatus.from_dict(api_status)
-        except ValidationError as ex:
+        except QiskitError as ex:
             raise LookupError(
                 "Couldn't get backend status: {0}".format(ex)
             )
