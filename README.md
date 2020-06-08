@@ -1,6 +1,6 @@
 # Qiskit Honeywell Provider
 
-[![License](https://img.shields.io/github/license/Qiskit/qiskit-honeywell-provider.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)[![Build Status](https://img.shields.io/travis/com/Qiskit/qiskit-honeywell-provider/master.svg?style=popout-square)](https://travis-ci.com/Qiskit/qiskit-honeywell-provider)[![](https://img.shields.io/github/release/Qiskit/qiskit-honeywell-provider.svg?style=popout-square)](https://github.com/Qiskit/qiskit-honeywell-provider/releases)[![](https://img.shields.io/pypi/dm/qiskit-honeywell-provider.svg?style=popout-square)](https://pypi.org/project/qiskit-honeywell-provider/)
+[![License](https://img.shields.io/github/license/qiskit-community/qiskit-honeywell-provider.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)[![Build Status](https://img.shields.io/travis/com/qiskit-community/qiskit-honeywell-provider/master.svg?style=popout-square)](https://travis-ci.com/qiskit-community/qiskit-honeywell-provider)[![](https://img.shields.io/github/release/qiskit-community/qiskit-honeywell-provider.svg?style=popout-square)](https://github.com/qiskit-community/qiskit-honeywell-provider/releases)[![](https://img.shields.io/pypi/dm/qiskit-honeywell-provider.svg?style=popout-square)](https://pypi.org/project/qiskit-honeywell-provider/)
 
 **Qiskit** is an open-source framework for working with noisy quantum computers at the level of pulses, circuits, and algorithms.
 
@@ -64,16 +64,9 @@ result = execute(qc, backend).result()
 print(result.get_counts(qc))
 ```
 
-## Authors and Citation
-
-The Qiskit Honeywell provider is the work of many people who contribute to the
-project at different levels. If you use Qiskit, please cite as per the included
-[BibTeX file].
-
 ## License
 
 [Apache License 2.0].
 
-[BibTeX file]: https://github.com/Qiskit/qiskit/blob/master/Qiskit.bib
-[Apache License 2.0]: https://github.com/Qiskit/qiskit-honeywell-provider/blob/master/LICENSE.txt
+[Apache License 2.0]: https://github.com/qiskit-community/qiskit-honeywell-provider/blob/master/LICENSE.txt
 
