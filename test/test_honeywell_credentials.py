@@ -25,13 +25,13 @@ from qiskit.test import QiskitTestCase
 
 class TestCredentials(QiskitTestCase):
 
-    @mock.patch.object(credentials, 'read_creds_from_qiskitrc',
+    @mock.patch.object(credentials.Credentials, 'load_from_qiskitrc',
                        return_value=None)
-    @mock.patch.object(credentials, 'read_creds_from_environ',
+    @mock.patch.object(credentials.Credentials, 'load_from_environ',
                        return_value=None)
     def test_discover_credentials_no_creds(self, environ_mock, qiskitrc_mock):
         self.assertEqual(None,
-                         credentials.discover_credentials())
+                         credentials.Credentials().token)
         qiskitrc_mock.assert_called_once_with(
-            filename=credentials.DEFAULT_QISKITRC_FILE)
+            credentials.DEFAULT_QISKITRC_FILE)
         environ_mock.assert_called_once_with()

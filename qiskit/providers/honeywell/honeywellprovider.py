@@ -33,7 +33,8 @@ from qiskit.providers import BaseProvider
 from qiskit.providers.models import BackendConfiguration
 
 from .api import HoneywellClient
-from .credentials import discover_credentials, write_creds_to_qiskitrc, remove_creds_from_qiskitrc
+#from .credentials import discover_credentials, write_creds_to_qiskitrc, remove_creds_from_qiskitrc
+from .credentials import Credentials
 from .exceptions import HoneywellCredentialsNotFound
 from .honeywellbackend import HoneywellBackend
 
@@ -49,34 +50,37 @@ class HoneywellProvider(BaseProvider):
         super().__init__()
 
         # Get a connection to Honeywell.
-        self._api = HoneywellClient()
+        self._api = None 
 
         # Populate the list of remote backends.
         self._backends = None
 
     def load_account(self):
         """ Obtain stored credentials """
-        credentials = discover_credentials()
+        self.credentials = Credentials()
+        self._api = HoneywellClient(proxies = self.credentials.proxies)
 
-        if not credentials:
+        if not self.credentials.token:
             raise HoneywellCredentialsNotFound
 
-        self._api.authenticate(credentials)
+        self._api.authenticate(self.credentials)
 
-    def save_account(self, token, overwrite=False, filename=None):
+    def save_account(self, token:str, proxies: dict=None, overwrite=False, filename=None):
         """ Save the credentials onto disk """
-        self._api.authenticate(token)
+        self.credentials = Credentials(token, proxies)#discover_credentials()
+        self._api = HoneywellClient(proxies = self.credentials.proxies)
+        self._api.authenticate(self.credentials)
         if filename:
-            write_creds_to_qiskitrc(token, overwrite, filename)
+            self.credentials.save_config(filename=filename, overwrite=overwrite)
         else:
-            write_creds_to_qiskitrc(token, overwrite)
+            self.credentials.save_config(overwrite=overwrite)
 
     def delete_credentials(self, filename=None):
         """ Delete the credentials from disk """
         if filename:
-            remove_creds_from_qiskitrc(filename)
+            self.credentials.remove_creds_from_qiskitrc(filename)
         else:
-            remove_creds_from_qiskitrc()
+            self.credentials.remove_creds_from_qiskitrc()
 
     def backends(self, name=None, **kwargs):
         if not self._api.has_token():
@@ -104,7 +108,7 @@ class HoneywellProvider(BaseProvider):
             'backend_version': '0.0.1',
             'simulator': False,
             'local': False,
-            'basis_gates': ['rx', 'ry', 'rz', 'cx', 'h'],
+            'basis_gates': ['rx', 'ry', 'rz', 'cx', 'h', 'u1', 'x', 'y', 'u3'],
             'memory': False,
             'n_qubits': 0,
             'conditional': True,

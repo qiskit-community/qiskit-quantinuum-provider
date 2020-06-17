@@ -57,7 +57,7 @@ class HoneywellBackendTestCase(QiskitTestCase):
     api_cls = HoneywellClient
 
     backend_cls = HoneywellBackend
-    backend_name = 'deadhead'
+    backend_name = 'HQS-LT-1.0-APIVAL'
 
     def setUp(self):
         provider = self.provider_cls()

@@ -41,7 +41,7 @@
 from requests import Session, RequestException
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-
+import logging
 from .exceptions import RequestsApiError
 
 STATUS_FORCELIST = (
@@ -146,7 +146,7 @@ class RetrySession(Session):
         final_url = self.base_url + url
 
         try:
-            response = super().request(method, final_url, **kwargs)
+            response = super().request(method, final_url, proxies=self.proxies['urls'] if self.proxies else {}, **kwargs)
             response.raise_for_status()
         except RequestException as ex:
             # Wrap the requests exceptions into a Honeywell custom one, for

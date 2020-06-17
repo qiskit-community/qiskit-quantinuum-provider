@@ -37,7 +37,7 @@ from collections import Counter
 from datetime import datetime, timezone
 import nest_asyncio
 import websockets
-
+from time import sleep
 from qiskit.assembler.disassemble import disassemble
 from qiskit.providers import BaseJob, JobError
 from qiskit.providers.jobstatus import JOB_FINAL_STATES, JobStatus
@@ -258,6 +258,13 @@ class HoneywellJob(BaseJob):
                     await websocket.send(json.dumps(body))
                     api_response = await asyncio.wait_for(websocket.recv(), timeout=timeout)
                     api_response = json.loads(api_response)
+            else:
+                print('Websockets via proxy not supported.  Falling-back to polling.')
+                request_delay = 1.0
+                while api_response['status'] not in ['failed', 'completed', 'canceled']: 
+                    sleep(request_delay)
+                    request_delay = min(request_delay*1.5, 10) # Max-out at 10 second delay
+                    api_response = self._api.job_status(job_id)
             # self._update_status_and_result(api_response)
         except Exception as err:
             raise JobError(str(err))
