@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of Qiskit
 #
 # (C) Copyright IBM 2017.
 #
@@ -53,16 +53,16 @@ setuptools.setup(
     description="Qiskit provider for accessing the quantum devices at Honeywell",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url="https://github.com/Qiskit/qiskit-honeywell-provider",
+    url="https://github.com/qiskit-community/qiskit-honeywell-provider",
     packages=setuptools.find_namespace_packages(include=['qiskit.*']),
     install_requires=requirements,
     python_requires=">=3.5",
     include_package_data=True,
     keywords="qiskit quantum",
     project_urls={
-        "Bug Tracker": "https://github.com/Qiskit/qiskit-honeywell-provider/issues",
+        "Bug Tracker": "https://github.com/qiskit-community/qiskit-honeywell-provider/issues",
         "Documentation": "https://qiskit.org/documentation/",
-        "Source Code": "https://github.com/Qiskit/qiskit-honeywell-provider"
+        "Source Code": "https://github.com/qiskit-community/qiskit-honeywell-provider"
     },
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
