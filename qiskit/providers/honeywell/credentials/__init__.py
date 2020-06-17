@@ -42,17 +42,19 @@ class HoneywellCredentialsError(HoneywellError):
     """ Base class for errors raised during credential management """
     pass
 
+
 class Credentials:
+    """ Class implementing all credential handling for id/refresh tokens """
     def __init__(self,
                  token: str = None,
                  proxies: dict = None):
-        """ 
+        """
         Credentials Constructor
         """
         # Default empty config
         self.token = None
         self.proxies = None
-        
+
         # Load configuration from env/config file
         self.load_config(DEFAULT_QISKITRC_FILE)
 
@@ -62,28 +64,9 @@ class Credentials:
         if proxies is not None:
             self.proxies = proxies
 
-
-    def discover_credentials(self, qiskitrc_filename=DEFAULT_QISKITRC_FILE):
-        """ Automatically discover credentials from qiskitrc file or environment variables """
-        creds = None
-        readers = ((self.read_creds_from_environ, {}),
-                   (self.read_creds_from_qiskitrc, {'filename': qiskitrc_filename})
-        )
-        for reader_func, kwargs in readers:
-            try:
-                creds = reader_func(**kwargs)
-                if creds:
-                    break
-            except HoneywellCredentialsError as ex:
-                logger.warning('Automatic discovery failed: %s', str(ex))
-
-        return creds
-
-
     def load_from_environ(self):
         """ Attempts to read credentials from environment variable """
         self.token = os.getenv('HON_QIS_API')
-
 
     def load_from_qiskitrc(self, filename):
         """ Attempts to read credentials from qiskitrc file
@@ -95,15 +78,18 @@ class Credentials:
         except ParsingError as ex:
             raise HoneywellCredentialsError(str(ex))
 
-        setattr(self, 'token', config_parser.get(SECTION_NAME, 'API_KEY', fallback=self.token))
-        setattr(self, 'proxies', literal_eval(config_parser.get(SECTION_NAME, 'proxies', fallback='{}')))
-            
-            
+        setattr(self, 'token',
+                config_parser.get(SECTION_NAME, 'API_KEY', fallback=self.token))
+        setattr(self, 'proxies',
+                literal_eval(config_parser.get(SECTION_NAME, 'proxies', fallback='{}')))
+
     def load_config(self, filename):
+        """ Load config information from environment or configuration file """
         self.load_from_environ()
         self.load_from_qiskitrc(filename)
 
     def save_config(self, filename=DEFAULT_QISKITRC_FILE, overwrite=False):
+        """ Save configuration to resource file. """
         self.save_qiskitrc(overwrite, filename)
 
     def save_qiskitrc(self, overwrite=False, filename=DEFAULT_QISKITRC_FILE):
@@ -117,14 +103,14 @@ class Credentials:
             raise HoneywellCredentialsError(str(ex))
 
         if not config_parser.has_section(SECTION_NAME):
-            config_parser[SECTION_NAME]={}
-        for k,v in {'API_KEY':self.token, 'proxies':str(self.proxies)}.items():
-            if not k in config_parser[SECTION_NAME] or not overwrite:
+            config_parser[SECTION_NAME] = {}
+        for k, v in {'API_KEY': self.token, 'proxies': str(self.proxies)}.items():
+            if k not in config_parser[SECTION_NAME] or not overwrite:
                 config_parser[SECTION_NAME].update({k: v})
         (Path(filename).parent).mkdir(parents=True, exist_ok=True)
         with open(filename, 'w') as conf_file:
             config_parser.write(conf_file)
-            
+
     def remove_creds_from_qiskitrc(self, filename=DEFAULT_QISKITRC_FILE):
         """ Removes the credentials from the configuration file
             The default qiskitrc location is in ``$HOME/.qiskitrc/qhprc``

@@ -33,7 +33,6 @@ from qiskit.providers import BaseProvider
 from qiskit.providers.models import BackendConfiguration
 
 from .api import HoneywellClient
-#from .credentials import discover_credentials, write_creds_to_qiskitrc, remove_creds_from_qiskitrc
 from .credentials import Credentials
 from .exceptions import HoneywellCredentialsNotFound
 from .honeywellbackend import HoneywellBackend
@@ -50,25 +49,26 @@ class HoneywellProvider(BaseProvider):
         super().__init__()
 
         # Get a connection to Honeywell.
-        self._api = None 
+        self._api = None
 
         # Populate the list of remote backends.
         self._backends = None
+        self.credentials = None
 
     def load_account(self):
         """ Obtain stored credentials """
         self.credentials = Credentials()
-        self._api = HoneywellClient(proxies = self.credentials.proxies)
+        self._api = HoneywellClient(proxies=self.credentials.proxies)
 
         if not self.credentials.token:
             raise HoneywellCredentialsNotFound
 
         self._api.authenticate(self.credentials)
 
-    def save_account(self, token:str, proxies: dict=None, overwrite=False, filename=None):
+    def save_account(self, token: str, proxies: dict = None, overwrite=False, filename=None):
         """ Save the credentials onto disk """
-        self.credentials = Credentials(token, proxies)#discover_credentials()
-        self._api = HoneywellClient(proxies = self.credentials.proxies)
+        self.credentials = Credentials(token, proxies)
+        self._api = HoneywellClient(proxies=self.credentials.proxies)
         self._api.authenticate(self.credentials)
         if filename:
             self.credentials.save_config(filename=filename, overwrite=overwrite)

@@ -55,7 +55,7 @@ class HoneywellClient:
 
         # Create the api server client
         client_api = Api(RetrySession(service_url,
-                                      proxies = proxies))
+                                      proxies=proxies))
 
         return client_api
 
@@ -67,7 +67,7 @@ class HoneywellClient:
         """Authenticate against the API and aquire a token."""
         service_url = urljoin(_API_URL, _API_VERSION)
         self.client_api = Api(RetrySession(service_url,
-                                           proxies = credentials.proxies))
+                                           proxies=credentials.proxies))
         self.client_api.session.access_token = credentials.token
         self.client_api.session.proxies = credentials.proxies
 
