@@ -48,5 +48,7 @@ class Job(RestAdapterBase):
 
     def status(self):
         """Return the status of a job."""
-        url = f'{self.get_url("status")}?websocket={"false" if self.session.proxies else "true"}'
+        url = "{url}?websocket={proxies}".format(url=self.get_url("status"),
+                                                 proxies="false" if self.session.proxies
+                                                 else "true")
         return self.session.get(url).json()

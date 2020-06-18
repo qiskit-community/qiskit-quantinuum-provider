@@ -28,7 +28,7 @@
 from configparser import ConfigParser, ParsingError
 import logging
 import os
-from ast import literal_eval
+import json
 from pathlib import Path
 
 from ..exceptions import HoneywellError
@@ -81,7 +81,7 @@ class Credentials:
         setattr(self, 'token',
                 config_parser.get(SECTION_NAME, 'API_KEY', fallback=self.token))
         setattr(self, 'proxies',
-                literal_eval(config_parser.get(SECTION_NAME, 'proxies', fallback='{}')))
+                json.loads(config_parser.get(SECTION_NAME, 'proxies', fallback='{}')))
 
     def load_config(self, filename):
         """ Load config information from environment or configuration file """
@@ -104,9 +104,12 @@ class Credentials:
 
         if not config_parser.has_section(SECTION_NAME):
             config_parser[SECTION_NAME] = {}
-        for k, v in {'API_KEY': self.token, 'proxies': str(self.proxies)}.items():
+        for k, v in {'API_KEY': self.token, 'proxies': self.proxies}.items():
             if k not in config_parser[SECTION_NAME] or not overwrite:
-                config_parser[SECTION_NAME].update({k: v})
+                if isinstance(v, dict):
+                    config_parser[SECTION_NAME].update({k: json.dumps(v)})
+                else:
+                    config_parser[SECTION_NAME].update({k: v})
         (Path(filename).parent).mkdir(parents=True, exist_ok=True)
         with open(filename, 'w') as conf_file:
             config_parser.write(conf_file)
