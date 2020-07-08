@@ -208,7 +208,7 @@ class HoneywellJob(BaseJob):
         # Wait for results sequentially
         for job_id in self._job_ids:
             self._experiment_results.append(
-                asyncio.get_event_loop().run_until_complete(self.status(job_id, timeout))
+                asyncio.get_event_loop().run_until_complete(self._get_status(job_id, timeout))
                 )
 
         # Process results
@@ -227,11 +227,11 @@ class HoneywellJob(BaseJob):
         """Attempt to cancel job."""
         pass
 
-    async def status(self, job_id, timeout=300):
+    async def _get_status(self, job_id, timeout=300):
         """Query the API to update the status.
 
         Returns:
-            qiskit.providers.JobStatus: The status of the job, once updated.
+            The api response including the job status
 
         Raises:
             JobError: if there was an exception in the future being executed
@@ -245,10 +245,11 @@ class HoneywellJob(BaseJob):
             if 'websocket' in api_response:
                 task_token = api_response['websocket']['task_token']
                 execution_arn = api_response['websocket']['executionArn']
-                websocket_uri = "wss://ws.qapi.honeywell.com/v1"
+                credentials = self.backend().provider().credentials
+                websocket_uri = credentials.url.replace('https://', 'wss://ws.')
                 async with websockets.connect(
                         websocket_uri, extra_headers={
-                            'x-api-key': self._api.client_api.session.access_token}) as websocket:
+                            'Authorization': credentials.access_token}) as websocket:
 
                     body = {
                         "action": "OpenConnection",
@@ -259,17 +260,44 @@ class HoneywellJob(BaseJob):
                     api_response = await asyncio.wait_for(websocket.recv(), timeout=timeout)
                     api_response = json.loads(api_response)
             else:
-                print('Websockets via proxy not supported.  Falling-back to polling.')
-                request_delay = 1.0
+                residual_delay = timeout/1000  # convert us -> s
+                request_delay = min(1.0, residual_delay)
                 while api_response['status'] not in ['failed', 'completed', 'canceled']:
                     sleep(request_delay)
-                    request_delay = min(request_delay*1.5, 10)  # Max-out at 10 second delay
                     api_response = self._api.job_status(job_id)
-            # self._update_status_and_result(api_response)
+
+                    residual_delay = residual_delay - request_delay
+                    if residual_delay <= 0:
+                        # break if we have exceeded timeout
+                        break
+
+                    # Max-out at 10 second delay
+                    request_delay = min(min(request_delay*1.5, 10), residual_delay)
         except Exception as err:
             raise JobError(str(err))
 
         return api_response
+
+    def status(self, timeout=300):
+        """Query the API to update the status.
+
+        Returns:
+            qiskit.providers.JobStatus: The status of the job, once updated.
+
+        Raises:
+            JobError: if there was an exception in the future being executed
+                          or the server sent an unknown answer.
+        """
+        # Wait for results sequentially
+        for job_id in self._job_ids:
+            self._experiment_results.append(
+                asyncio.get_event_loop().run_until_complete(self._get_status(job_id, timeout))
+                )
+
+        # Process results
+        self._result = self._process_results()
+
+        return self._status
 
     def error_message(self):
         """Provide details about the reason of failure.

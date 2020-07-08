@@ -39,37 +39,43 @@ class HoneywellClient:
     """Client for programmatic access to the Honeywell API."""
 
     def __init__(self,
-                 proxies: dict = None):
+                 credentials,
+                 proxies: dict = None,
+                 api_url: str = _API_URL):
         """ HoneywellClient constructor """
-
-        self.client_api = self._init_service_client(proxies)
+        self.credentials = credentials
+        self.api_url = api_url
+        self.client_api = self._init_service_client(proxies, api_url)
 
     def _init_service_client(self,
-                             proxies: dict = None):
+                             proxies: dict = None,
+                             api_url: str = None):
         """Initialize the client used for communicating with the API.
 
         Returns:
             Api: client for the api server.
         """
-        service_url = urljoin(_API_URL, _API_VERSION)
+        service_url = urljoin(api_url, _API_VERSION)
 
         # Create the api server client
         client_api = Api(RetrySession(service_url,
+                                      credentials=self.credentials,
                                       proxies=proxies))
 
         return client_api
 
     def has_token(self):
         """Check if a token has been aquired."""
-        return bool(self.client_api.session.access_token)
+        return bool(self.client_api.session.credentials.access_token)
 
-    def authenticate(self, credentials):
+    def authenticate(self, credentials=None):
         """Authenticate against the API and aquire a token."""
-        service_url = urljoin(_API_URL, _API_VERSION)
+        service_url = urljoin(self.api_url, _API_VERSION)
+        if credentials:
+            self.credentials = credentials
         self.client_api = Api(RetrySession(service_url,
-                                           proxies=credentials.proxies))
-        self.client_api.session.access_token = credentials.token
-        self.client_api.session.proxies = credentials.proxies
+                                           credentials=self.credentials,
+                                           proxies=self.credentials.proxies))
 
     # Backend-related public functions.
     def list_backends(self):
