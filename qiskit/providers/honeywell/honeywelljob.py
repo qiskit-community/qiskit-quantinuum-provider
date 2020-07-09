@@ -231,7 +231,7 @@ class HoneywellJob(BaseJob):
         """Query the API to update the status.
 
         Returns:
-            The api response including the job status
+            qiskit.providers.JobStatus: The api response including the job status
 
         Raises:
             JobError: if there was an exception in the future being executed

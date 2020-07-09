@@ -34,7 +34,7 @@ class TestCredentials(QiskitTestCase):
         login_mock.assert_called_once_with()
 
     def test_credentials_valid_urls(self):
-        c = Credentials()
+        c = Credentials
 
         https_valid = ['https://', '']
         api_valid_prefix = ['test', 'test.', 'qa', 'qa.', 'dev', 'dev.', 'q']
@@ -57,7 +57,7 @@ class TestCredentials(QiskitTestCase):
                         self.assertEqual(version, _API_VERSION)
 
     def test_credentials_invalid_urls(self):
-        c = Credentials()
+        c = Credentials
 
         https_valid = ['https://', '']
         api_valid_prefix = ['test', 'test.', 'qa', 'qa.', 'dev', 'dev.', 'q']

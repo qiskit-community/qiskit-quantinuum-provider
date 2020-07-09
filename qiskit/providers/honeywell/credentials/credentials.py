@@ -93,15 +93,20 @@ class Credentials:
         #       authenticating to avoid keeping the password any longer than necessary
         self.user_name, _ = self._get_credentials(pwd_prompt=False)
 
-        self.api_url, self.api_version = self._canonicalize_url(self.api_url)
-        if self.api_url == _API_URL:
-            self.url = urljoin(_API_URL, self.api_version)
-            self.keyring_service = 'HQS-API'+self.user_name
+        self.api_url, self.api_version = Credentials._canonicalize_url(self.api_url)
+        if self.user_name:
+            if self.api_url == _API_URL:
+                self.url = urljoin(_API_URL, self.api_version)
+                self.keyring_service = 'HQS-API'+self.user_name
+            else:
+                self.url = urljoin(self.api_url, self.api_version)
+                self.keyring_service = 'HQS-API:'+self.url+":"+self.user_name
         else:
-            self.url = urljoin(self.api_url, self.api_version)
-            self.keyring_service = 'HQS-API:'+self.url+":"+self.user_name
+            self.url = urljoin(_API_URL, self.api_version)
+            self.keyring_service = 'HQS-API'
 
-    def _canonicalize_url(self, url):
+    @staticmethod
+    def _canonicalize_url(url):
         """ Provided a URL, determine if it is near-enough to expected to
         glean user-intent.  Wherever possible default to known good behavior
         or provide error message with suggestions.
@@ -169,11 +174,8 @@ class Credentials:
 
     def _get_credentials(self, pwd_prompt=True):
         """ Method to ask for user's credentials """
-        if not self.user_name:
-            user_name = input('Enter your email: ')
-        else:
-            user_name = self.user_name
-        if pwd_prompt:
+        user_name = self.user_name
+        if user_name and pwd_prompt:
             pwd = getpass(prompt='Enter your password: ')
         else:
             pwd = None

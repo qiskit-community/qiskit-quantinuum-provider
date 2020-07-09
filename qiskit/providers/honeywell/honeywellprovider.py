@@ -59,12 +59,13 @@ class HoneywellProvider(BaseProvider):
     def load_account(self):
         """ Obtain stored credentials """
         self.credentials = Credentials()
+
+        if not self.credentials.user_name or not self.credentials.access_token:
+            raise HoneywellCredentialsNotFound
+
         self._api = HoneywellClient(credentials=self.credentials,
                                     proxies=self.credentials.proxies,
                                     api_url=self.credentials.api_url)
-
-        if not self.credentials.access_token:
-            raise HoneywellCredentialsNotFound
 
         self._api.authenticate()
 

@@ -60,8 +60,6 @@ class HoneywellBackendTestCase(QiskitTestCase):
     backend_name = 'HQS-LT-1.0-APIVAL'
 
     def setUp(self):
-        Honeywell.load_account()
-        self.backend = Honeywell.get_backend(self.backend_name)
         self.circuit = QuantumCircuit(4)
         self.circuit.h(0)
         self.circuit.cx(0, 1)
@@ -100,37 +98,48 @@ class HoneywellBackendTestCase(QiskitTestCase):
         """Test backend.properties()."""
         pass
 
+    @online_test
     def test_provider(self):
         """Test backend.provider()."""
-        provider = self.backend.provider()
+        Honeywell.load_account()
+        backend = Honeywell.get_backend(self.backend_name)
+        provider = backend.provider()
         self.assertEqual(provider, self.provider_cls())
 
     @online_test
     def test_status(self):
         """Test backend.status()."""
-        status = self.backend.status()
+        Honeywell.load_account()
+        backend = Honeywell.get_backend(self.backend_name)
+        status = backend.status()
         self.assertIsInstance(status, BackendStatus)
 
     @online_test
     def test_name(self):
         """Test backend.name()."""
-        name = self.backend.name()
+        Honeywell.load_account()
+        backend = Honeywell.get_backend(self.backend_name)
+        name = backend.name()
         self.assertEqual(name, self.backend_name)
 
     @online_test
     def _submit_job(self):
         """Helper method to submit job and return job instance"""
-        return execute(self.circuit, self.backend)
+        Honeywell.load_account()
+        backend = Honeywell.get_backend(self.backend_name)
+        return execute(self.circuit, backend)
 
     @online_test
     def test_submit_job(self):
         """Test running a single circuit."""
+        Honeywell.load_account()
         job = self._submit_job()
         self.assertIsInstance(job, HoneywellJob)
 
     @online_test
     def test_get_job_result(self):
         """Test get result of job"""
+        Honeywell.load_account()
         job = self._submit_job()
         result = job.result()
         self.assertEqual(result.success, True)
@@ -140,6 +149,7 @@ class HoneywellBackendTestCase(QiskitTestCase):
     def test_get_job_status(self):
         """Test get status of job"""
         job = self._submit_job()
+        Honeywell.load_account()
         status = job.status()
         self.assertIsInstance(status, JobStatus)
 
@@ -150,6 +160,7 @@ class HoneywellBackendTestCase(QiskitTestCase):
     @online_test
     def test_get_creation_date(self):
         """Test get creation date of job"""
+        Honeywell.load_account()
         job = self._submit_job()
         creation_date = job.creation_date()
         self.assertIsNotNone(creation_date)
@@ -157,6 +168,7 @@ class HoneywellBackendTestCase(QiskitTestCase):
     @online_test
     def test_get_job_id(self):
         """Test get id of job"""
+        Honeywell.load_account()
         job = self._submit_job()
         job_id = job.job_id()
         self.assertIsNotNone(job_id)
@@ -164,10 +176,12 @@ class HoneywellBackendTestCase(QiskitTestCase):
     @online_test
     def test_job_with_id(self):
         """Test creating a job with an id."""
+        Honeywell.load_account()
+        backend = Honeywell.get_backend(self.backend_name)
         job = self._submit_job()
         job_id = job.job_id()
-        credentials = self.backend.provider().credentials
-        job_created_with_id = HoneywellJob(self.backend, job_id, self.api_cls(credentials))
+        credentials = backend.provider().credentials
+        job_created_with_id = HoneywellJob(backend, job_id, self.api_cls(credentials))
         result = job_created_with_id.result()
         self.assertEqual(result.success, True)
         return result
