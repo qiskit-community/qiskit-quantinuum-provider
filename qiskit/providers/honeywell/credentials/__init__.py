@@ -70,7 +70,7 @@ class Credentials:
 
     def load_from_qiskitrc(self, filename):
         """ Attempts to read credentials from qiskitrc file
-        The default qiskitrc location is in ``$HOME/.qiskitrc/qhprc``
+        The default qiskitrc location is in ``$HOME/.qiskit/qhprc``
         """
         config_parser = ConfigParser()
         try:
