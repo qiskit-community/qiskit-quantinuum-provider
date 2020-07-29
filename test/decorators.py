@@ -18,7 +18,7 @@ import functools
 import os
 import unittest
 
-from qiskit.providers.honeywell.credentials import discover_credentials
+from qiskit.providers.honeywell.credentials import Credentials
 from qiskit.providers.honeywell import exceptions
 from qiskit.util import _has_connection
 
@@ -61,7 +61,7 @@ def online_test(func):
             raise unittest.SkipTest("Test requires internet connection.")
 
         try:
-            credentials = discover_credentials()
+            credentials = Credentials()
         except exceptions.HoneywellError:
             raise unittest.SkipTest("Test requires valid honeywell credentials")
         if not credentials:

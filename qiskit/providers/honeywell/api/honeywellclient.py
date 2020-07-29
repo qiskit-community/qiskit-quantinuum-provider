@@ -38,12 +38,14 @@ _API_VERSION = 'v1'
 class HoneywellClient:
     """Client for programmatic access to the Honeywell API."""
 
-    def __init__(self):
+    def __init__(self,
+                 proxies: dict = None):
         """ HoneywellClient constructor """
 
-        self.client_api = self._init_service_client()
+        self.client_api = self._init_service_client(proxies)
 
-    def _init_service_client(self):
+    def _init_service_client(self,
+                             proxies: dict = None):
         """Initialize the client used for communicating with the API.
 
         Returns:
@@ -52,7 +54,8 @@ class HoneywellClient:
         service_url = urljoin(_API_URL, _API_VERSION)
 
         # Create the api server client
-        client_api = Api(RetrySession(service_url))
+        client_api = Api(RetrySession(service_url,
+                                      proxies=proxies))
 
         return client_api
 
@@ -60,9 +63,13 @@ class HoneywellClient:
         """Check if a token has been aquired."""
         return bool(self.client_api.session.access_token)
 
-    def authenticate(self, token):
+    def authenticate(self, credentials):
         """Authenticate against the API and aquire a token."""
-        self.client_api.session.access_token = token
+        service_url = urljoin(_API_URL, _API_VERSION)
+        self.client_api = Api(RetrySession(service_url,
+                                           proxies=credentials.proxies))
+        self.client_api.session.access_token = credentials.token
+        self.client_api.session.proxies = credentials.proxies
 
     # Backend-related public functions.
     def list_backends(self):

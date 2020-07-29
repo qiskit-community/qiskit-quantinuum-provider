@@ -48,7 +48,7 @@ setuptools.setup(
     name="qiskit-honeywell-provider",
     version=version_str,
     author="Honeywell",
-    author_email="jack.suen@honeywell.com",
+    author_email="dominic.lucchetti@honeywell.com",
     license="Apache 2.0",
     description="Qiskit provider for accessing the quantum devices at Honeywell",
     long_description=long_description,
