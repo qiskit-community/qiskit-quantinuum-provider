@@ -260,6 +260,7 @@ class HoneywellJob(BaseJob):
                     api_response = await asyncio.wait_for(websocket.recv(), timeout=timeout)
                     api_response = json.loads(api_response)
             else:
+                logger.warning('Websockets via proxy not supported.  Falling-back to polling.')
                 residual_delay = timeout/1000  # convert us -> s
                 request_delay = min(1.0, residual_delay)
                 while api_response['status'] not in ['failed', 'completed', 'canceled']:
