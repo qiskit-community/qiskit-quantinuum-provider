@@ -83,6 +83,8 @@ class RetrySession(Session):
         self._initialize_session_parameters(verify, proxies or {}, auth)
 
     def update_auth(self):
+        """ Updates the headers with updated authorization, or removes
+            the authorization if credentials have been cleared. """
         if self._credentials is not None:
             self.headers.update({'Authorization': self._credentials.access_token})
         else:

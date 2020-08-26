@@ -77,8 +77,7 @@ class HoneywellProvider(BaseProvider):
         """ Save the credentials onto disk """
         self.credentials = Credentials(user_name, proxies, api_url)
         self._api = HoneywellClient(credentials=self.credentials,
-                                    proxies=self.credentials.proxies,
-                                    api_url=api_url)
+                                    proxies=self.credentials.proxies)
         self._api.authenticate()
         if filename:
             self.credentials.save_config(filename=filename, overwrite=overwrite)

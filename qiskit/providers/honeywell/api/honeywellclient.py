@@ -47,6 +47,11 @@ class HoneywellClient:
 
     @property
     def api_url(self):
+        """ Returns the api url that the credential object is targeting
+
+        Returns:
+            str: API URL
+        """
         return self.credentials.api_url
 
     def _init_service_client(self,

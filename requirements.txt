@@ -1,7 +1,5 @@
 nest-asyncio>=1.2.0
 qiskit-terra>=0.10
-qiskit-aer
-qiskit-ibmq-provider
 requests>=2.19
 websockets>=7
 pyjwt>=1.7.1

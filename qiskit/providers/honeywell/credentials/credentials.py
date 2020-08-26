@@ -206,7 +206,7 @@ class Credentials:
 
         if status_code != HTTPStatus.OK:
             # check if we got an error because refresh token has expired
-            if status_code == HTTPStatus.FORBIDDEN or status_code == HTTPStatus.BAD_REQUEST:
+            if status_code in (HTTPStatus.FORBIDDEN, HTTPStatus.BAD_REQUEST):
                 print(message.get('error', {}).get('text', 'Request forbidden'))
 
                 # ask user for credentials to login again
