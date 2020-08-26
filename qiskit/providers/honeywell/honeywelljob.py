@@ -46,6 +46,8 @@ from qiskit.result import Result
 
 from .apiconstants import ApiJobStatus
 
+from .api import HoneywellClient
+
 logger = logging.getLogger(__name__)
 
 # Because Qiskit is often used with the Jupyter notebook who runs its own asyncio event loop
@@ -121,7 +123,7 @@ class HoneywellJob(BaseJob):
         ``JobStatus.ERROR`` and you can call ``error_message()`` to get more
         info.
     """
-    def __init__(self, backend, job_id, api, qobj=None):
+    def __init__(self, backend, job_id, api=None, qobj=None):
         """HoneywellJob init function.
 
         We can instantiate jobs from two sources: A QObj, and an already submitted job returned by
@@ -142,7 +144,11 @@ class HoneywellJob(BaseJob):
         """
         super().__init__(backend, job_id)
 
-        self._api = api
+        if api:
+            self._api = api
+        else:
+            self._api = HoneywellClient(backend.provider().credentials)
+            print(backend.provider().credentials.api_url)
         self._creation_date = datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()
 
         # Properties used for caching.

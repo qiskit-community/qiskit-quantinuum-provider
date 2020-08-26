@@ -64,8 +64,7 @@ class HoneywellProvider(BaseProvider):
             raise HoneywellCredentialsNotFound
 
         self._api = HoneywellClient(credentials=self.credentials,
-                                    proxies=self.credentials.proxies,
-                                    api_url=self.credentials.api_url)
+                                    proxies=self.credentials.proxies)
 
         self._api.authenticate()
 

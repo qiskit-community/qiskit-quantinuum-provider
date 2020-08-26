@@ -40,12 +40,14 @@ class HoneywellClient:
 
     def __init__(self,
                  credentials,
-                 proxies: dict = None,
-                 api_url: str = _API_URL):
+                 proxies: dict = None):
         """ HoneywellClient constructor """
         self.credentials = credentials
-        self.api_url = api_url
-        self.client_api = self._init_service_client(proxies, api_url)
+        self.client_api = self._init_service_client(proxies, self.credentials.api_url)
+
+    @property
+    def api_url(self):
+        return self.credentials.api_url
 
     def _init_service_client(self,
                              proxies: dict = None,
@@ -70,7 +72,7 @@ class HoneywellClient:
 
     def authenticate(self, credentials=None):
         """Authenticate against the API and aquire a token."""
-        service_url = urljoin(self.api_url, _API_VERSION)
+        service_url = urljoin(self.credentials.api_url, _API_VERSION)
         if credentials:
             self.credentials = credentials
         self.client_api = Api(RetrySession(service_url,

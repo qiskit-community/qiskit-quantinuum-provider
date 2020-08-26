@@ -77,28 +77,28 @@ class RetrySession(Session):
         super().__init__()
 
         self.base_url = base_url
-        self.credentials = credentials
+        self._credentials = credentials
 
         self._initialize_retry(retries, backoff_factor)
         self._initialize_session_parameters(verify, proxies or {}, auth)
 
-    @property
-    def credentials(self):
-        """Return the session access token."""
+    def update_auth(self):
         if self._credentials is not None:
             self.headers.update({'Authorization': self._credentials.access_token})
         else:
             self.headers.pop('Authorization', None)
+
+    @property
+    def credentials(self):
+        """Return the session access token."""
+        self.update_auth()
         return self._credentials
 
     @credentials.setter
     def credentials(self, value):
         """Set the session access token."""
         self._credentials = value
-        if value:
-            self.headers.update({'Authorization': self._credentials.access_token})
-        else:
-            self.headers.pop('Authorization', None)
+        self.update_auth()
 
     def _initialize_retry(self, retries, backoff_factor):
         """Set the Session retry policy.
@@ -130,6 +130,11 @@ class RetrySession(Session):
         self.auth = auth
         self.proxies = proxies or {}
         self.verify = verify
+
+    def prepare_request(self, request):
+        # Before making the request use this as an opportunity to check/update authorization field
+        self.update_auth()
+        return super().prepare_request(request)
 
     def request(self, method, url, **kwargs):  # pylint: disable=arguments-differ
         """Constructs a Request, prepending the base url.

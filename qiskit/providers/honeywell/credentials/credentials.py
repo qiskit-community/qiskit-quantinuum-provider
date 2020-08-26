@@ -190,7 +190,7 @@ class Credentials:
         body = {}
 
         if action == 'refresh':
-            body['refresh-token'] = self.refresh_token
+            body['refresh-token'] = self._get_token('refresh_token')
         else:
             # ask user for crendentials before making login request
             user_name, pwd = self._get_credentials()
@@ -206,16 +206,16 @@ class Credentials:
 
         if status_code != HTTPStatus.OK:
             # check if we got an error because refresh token has expired
-            if status_code == HTTPStatus.BAD_REQUEST:
+            if status_code == HTTPStatus.FORBIDDEN or status_code == HTTPStatus.BAD_REQUEST:
+                print(message.get('error', {}).get('text', 'Request forbidden'))
 
-                if 'Invalid Refresh Token' in message['error']['text']:
-                    # ask user for credentials to login again
-                    user_name, pwd = self._get_credentials()
-                    body['email'] = user_name
-                    body['password'] = pwd
+                # ask user for credentials to login again
+                user_name, pwd = self._get_credentials()
+                body['email'] = user_name
+                body['password'] = pwd
 
-                    # send login request to API
-                    status_code, message = self._request_tokens(body)
+                # send login request to API
+                status_code, message = self._request_tokens(body)
 
         if status_code != HTTPStatus.OK:
             raise RuntimeError('HTTP error while logging in:', status_code)
