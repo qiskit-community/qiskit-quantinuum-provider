@@ -44,6 +44,7 @@ class HoneywellProviderTestCase(ProviderTestCase):
     provider_cls = HoneywellProvider
     backend_names = ['HQS-LT-1.0', 'HQS-LT-1.0-APIVAL']
 
+    @online_test
     def setUp(self):
         super().setUp()
         self.provider.load_account()
