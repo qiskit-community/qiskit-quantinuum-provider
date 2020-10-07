@@ -278,7 +278,7 @@ class Credentials:
 
         # check id_token is not expired yet
         expiration_date = jwt.decode(id_token, verify=False)['exp']
-        if expiration_date < (datetime.datetime.now().timestamp()):
+        if expiration_date < (datetime.datetime.now(datetime.timezone.utc).timestamp()):
             print("Your id token is expired. Refreshing...")
 
             # get refresh_token
