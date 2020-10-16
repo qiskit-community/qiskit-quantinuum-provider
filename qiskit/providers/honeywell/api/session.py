@@ -60,14 +60,14 @@ class RetrySession(Session):
     ``requests.Session``.
     """
 
-    def __init__(self, base_url, access_token=None,
+    def __init__(self, base_url, credentials=None,
                  retries=5, backoff_factor=0.5,
                  verify=True, proxies=None, auth=None):
         """RetrySession constructor.
 
         Args:
             base_url (str): base URL for the session's requests.
-            access_token (str): access token.
+            credentials (Credentials): credential class that allows for access token refresh.
             retries (int): number of retries for the requests.
             backoff_factor (float): backoff factor between retry attempts.
             verify (bool): enable SSL verification.
@@ -77,25 +77,30 @@ class RetrySession(Session):
         super().__init__()
 
         self.base_url = base_url
-        self._access_token = access_token
-        self.access_token = access_token
+        self._credentials = credentials
 
         self._initialize_retry(retries, backoff_factor)
         self._initialize_session_parameters(verify, proxies or {}, auth)
 
-    @property
-    def access_token(self):
-        """Return the session access token."""
-        return self._access_token
-
-    @access_token.setter
-    def access_token(self, value):
-        """Set the session access token."""
-        self._access_token = value
-        if value:
-            self.headers.update({'x-api-key': value})
+    def update_auth(self):
+        """ Updates the headers with updated authorization, or removes
+            the authorization if credentials have been cleared. """
+        if self._credentials is not None:
+            self.headers.update({'Authorization': self._credentials.access_token})
         else:
-            self.headers.pop('x-api-key', None)
+            self.headers.pop('Authorization', None)
+
+    @property
+    def credentials(self):
+        """Return the session access token."""
+        self.update_auth()
+        return self._credentials
+
+    @credentials.setter
+    def credentials(self, value):
+        """Set the session access token."""
+        self._credentials = value
+        self.update_auth()
 
     def _initialize_retry(self, retries, backoff_factor):
         """Set the Session retry policy.
@@ -128,6 +133,11 @@ class RetrySession(Session):
         self.proxies = proxies or {}
         self.verify = verify
 
+    def prepare_request(self, request):
+        # Before making the request use this as an opportunity to check/update authorization field
+        self.update_auth()
+        return super().prepare_request(request)
+
     def request(self, method, url, **kwargs):  # pylint: disable=arguments-differ
         """Constructs a Request, prepending the base url.
 
@@ -154,8 +164,8 @@ class RetrySession(Session):
             # Wrap the requests exceptions into a Honeywell custom one, for
             # compatibility.
             message = str(ex)
-            if self.access_token:
-                message = message.replace(self.access_token, '...')
+            if self.credentials:
+                message = message.replace(self.credentials.access_token, '...')
 
             raise RequestsApiError(ex, message) from None
 

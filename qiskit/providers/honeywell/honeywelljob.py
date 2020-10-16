@@ -46,6 +46,8 @@ from qiskit.result import Result
 
 from .apiconstants import ApiJobStatus
 
+from .api import HoneywellClient
+
 logger = logging.getLogger(__name__)
 
 # Because Qiskit is often used with the Jupyter notebook who runs its own asyncio event loop
@@ -121,7 +123,7 @@ class HoneywellJob(BaseJob):
         ``JobStatus.ERROR`` and you can call ``error_message()`` to get more
         info.
     """
-    def __init__(self, backend, job_id, api, qobj=None):
+    def __init__(self, backend, job_id, api=None, qobj=None):
         """HoneywellJob init function.
 
         We can instantiate jobs from two sources: A QObj, and an already submitted job returned by
@@ -142,7 +144,11 @@ class HoneywellJob(BaseJob):
         """
         super().__init__(backend, job_id)
 
-        self._api = api
+        if api:
+            self._api = api
+        else:
+            self._api = HoneywellClient(backend.provider().credentials)
+            print(backend.provider().credentials.api_url)
         self._creation_date = datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()
 
         # Properties used for caching.
@@ -208,7 +214,7 @@ class HoneywellJob(BaseJob):
         # Wait for results sequentially
         for job_id in self._job_ids:
             self._experiment_results.append(
-                asyncio.get_event_loop().run_until_complete(self.status(job_id, timeout))
+                asyncio.get_event_loop().run_until_complete(self._get_status(job_id, timeout))
                 )
 
         # Process results
@@ -227,11 +233,11 @@ class HoneywellJob(BaseJob):
         """Attempt to cancel job."""
         pass
 
-    async def status(self, job_id, timeout=300):
+    async def _get_status(self, job_id, timeout=300):
         """Query the API to update the status.
 
         Returns:
-            qiskit.providers.JobStatus: The status of the job, once updated.
+            qiskit.providers.JobStatus: The api response including the job status
 
         Raises:
             JobError: if there was an exception in the future being executed
@@ -245,10 +251,11 @@ class HoneywellJob(BaseJob):
             if 'websocket' in api_response:
                 task_token = api_response['websocket']['task_token']
                 execution_arn = api_response['websocket']['executionArn']
-                websocket_uri = "wss://ws.qapi.honeywell.com/v1"
+                credentials = self.backend().provider().credentials
+                websocket_uri = credentials.url.replace('https://', 'wss://ws.')
                 async with websockets.connect(
                         websocket_uri, extra_headers={
-                            'x-api-key': self._api.client_api.session.access_token}) as websocket:
+                            'Authorization': credentials.access_token}) as websocket:
 
                     body = {
                         "action": "OpenConnection",
@@ -260,16 +267,44 @@ class HoneywellJob(BaseJob):
                     api_response = json.loads(api_response)
             else:
                 logger.warning('Websockets via proxy not supported.  Falling-back to polling.')
-                request_delay = 1.0
+                residual_delay = timeout/1000  # convert us -> s
+                request_delay = min(1.0, residual_delay)
                 while api_response['status'] not in ['failed', 'completed', 'canceled']:
                     sleep(request_delay)
-                    request_delay = min(request_delay*1.5, 10)  # Max-out at 10 second delay
                     api_response = self._api.job_status(job_id)
-            # self._update_status_and_result(api_response)
+
+                    residual_delay = residual_delay - request_delay
+                    if residual_delay <= 0:
+                        # break if we have exceeded timeout
+                        break
+
+                    # Max-out at 10 second delay
+                    request_delay = min(min(request_delay*1.5, 10), residual_delay)
         except Exception as err:
             raise JobError(str(err))
 
         return api_response
+
+    def status(self, timeout=300):
+        """Query the API to update the status.
+
+        Returns:
+            qiskit.providers.JobStatus: The status of the job, once updated.
+
+        Raises:
+            JobError: if there was an exception in the future being executed
+                          or the server sent an unknown answer.
+        """
+        # Wait for results sequentially
+        for job_id in self._job_ids:
+            self._experiment_results.append(
+                asyncio.get_event_loop().run_until_complete(self._get_status(job_id, timeout))
+                )
+
+        # Process results
+        self._result = self._process_results()
+
+        return self._status
 
     def error_message(self):
         """Provide details about the reason of failure.

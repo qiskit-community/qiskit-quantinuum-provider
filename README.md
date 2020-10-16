@@ -26,25 +26,40 @@ Once the package is installed, you can access the provider from Qiskit via the f
 from qiskit.providers.honeywell import Honeywell
 ```
 
-You will need credentials for the Honeywell Quantum Service. This can either be
-set via the `HQS_API_KEY` environment variable, or you can save that token to
-disk with:
+You will need credentials for the Honeywell Quantum Service. Credentials are
+tied to an e-mail address that can be stored on disk with:
 
 ```python3
-Honeywell.save_account('MYToken')
+Honeywell.save_account('username@company.com')
 ```
 
+After the initial saving of your account information, you will be prompted to enter
+your password which will be used to acquire a token that will enable continuous
+interaction until it expires.  Your password will **not** be saved to disk and will
+be required infrequently to update the credentials stored on disk or when a new
+machine must be authenticated.
+
 The credentials will then be loaded automatically on calls that return Backends,
-or you can manually load the credentials with:
+or can be manually loaded with:
 
 ```python3
 Honeywell.load_account()
 ```
 
-which will first check if the env variable is set and use that token and if not
-it will load any save credentials from disk.
+This will load the most recently saved credentials from disk so that they can be provided
+for each interaction with Honeywell's devices.
 
-With credentials loaded then you can access the backends from the provider:
+Storing a new account will **not** invalidate your other stored credentials.  You may have an arbitrary
+number of credentials saved.  To delete credentials you can use:
+
+```python3
+Honeywell.delete_credentials()
+```
+
+Which will delete the current accounts credentials from the credential store.  Please keep in mind
+this only deletes the current accounts credentials, and not all credentials stored.
+
+With credentials loaded you can access the backends from the provider:
 
 ```python3
 backends = Honeywell.backends()
@@ -69,13 +84,13 @@ print(result.get_counts(qc))
 To configure a proxy include it in the save account configuration:
 
 ```python3
-Honeywell.save_account('MYToken', proxies = {'urls': {'http': 'http://user:password@myproxy:8080', 'https': 'http://user:password@myproxy:8080'}})
+Honeywell.save_account('username@company.com', proxies = {'urls': {'http': 'http://user:password@myproxy:8080', 'https': 'http://user:password@myproxy:8080'}})
 ```
 
 To remove the proxy you can save with an empty dictionary:
 
 ```python3
-Honeywell.save_account('MYToken', proxies = {})
+Honeywell.save_account('username@company.com', proxies = {})
 ```
 
 The 'urls' field must be a dictionary that maps a protocol type or url to a specific proxy.  Additional information/details can be found [here](https://requests.readthedocs.io/en/master/user/advanced/#proxies).

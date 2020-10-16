@@ -50,37 +50,43 @@ class HoneywellProvider(BaseProvider):
 
         # Get a connection to Honeywell.
         self._api = None
+        self.credentials = None
 
         # Populate the list of remote backends.
         self._backends = None
-        self.credentials = None
+        self.credentials = Credentials()
 
     def load_account(self):
         """ Obtain stored credentials """
         self.credentials = Credentials()
-        self._api = HoneywellClient(proxies=self.credentials.proxies)
 
-        if not self.credentials.token:
+        if not self.credentials.user_name or not self.credentials.access_token:
             raise HoneywellCredentialsNotFound
 
-        self._api.authenticate(self.credentials)
+        self._api = HoneywellClient(credentials=self.credentials,
+                                    proxies=self.credentials.proxies)
 
-    def save_account(self, token: str, proxies: dict = None, overwrite=False, filename=None):
+        self._api.authenticate()
+
+    def save_account(self,
+                     user_name: str,
+                     proxies: dict = None,
+                     overwrite=False,
+                     filename=None,
+                     api_url: str = None):
         """ Save the credentials onto disk """
-        self.credentials = Credentials(token, proxies)
-        self._api = HoneywellClient(proxies=self.credentials.proxies)
-        self._api.authenticate(self.credentials)
+        self.credentials = Credentials(user_name, proxies, api_url)
+        self._api = HoneywellClient(credentials=self.credentials,
+                                    proxies=self.credentials.proxies)
+        self._api.authenticate()
         if filename:
             self.credentials.save_config(filename=filename, overwrite=overwrite)
         else:
             self.credentials.save_config(overwrite=overwrite)
 
-    def delete_credentials(self, filename=None):
+    def delete_credentials(self):
         """ Delete the credentials from disk """
-        if filename:
-            self.credentials.remove_creds_from_qiskitrc(filename)
-        else:
-            self.credentials.remove_creds_from_qiskitrc()
+        self.credentials.remove_creds()
 
     def backends(self, name=None, **kwargs):
         if not self._api.has_token():

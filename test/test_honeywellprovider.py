@@ -32,7 +32,6 @@ from qiskit.providers.honeywell import HoneywellProvider
 from .decorators import online_test
 
 
-@online_test
 class HoneywellProviderTestCase(ProviderTestCase):
     """Test case for Honeywell Provider.
 
@@ -43,8 +42,19 @@ class HoneywellProviderTestCase(ProviderTestCase):
         backend_names (list<str>): names of backends provided by the provider.
     """
     provider_cls = HoneywellProvider
-    backend_names = ['ARC1', 'deadhead', 'pikasim', 'pika']
+    backend_names = ['HQS-LT-1.0', 'HQS-LT-1.0-APIVAL']
 
+    @online_test
+    def setUp(self):
+        super().setUp()
+        self.provider.load_account()
+
+    @online_test
+    def test_backends(self):
+        """Test the provider has abackends."""
+        super().test_backends()
+
+    @online_test
     def test_get_backend(self):
         """Test getting a backend from the provider."""
         for backend_name in self.backend_names:
