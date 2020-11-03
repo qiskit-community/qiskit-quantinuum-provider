@@ -60,6 +60,7 @@ class HoneywellBackendTestCase(QiskitTestCase):
     backend_name = 'HQS-LT-1.0-APIVAL'
 
     def setUp(self):
+        super().setUp()
         self.circuit = QuantumCircuit(4)
         self.circuit.h(0)
         self.circuit.cx(0, 1)
