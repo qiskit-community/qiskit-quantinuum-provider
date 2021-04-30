@@ -16,12 +16,31 @@
 
 import functools
 import os
+import socket
 import unittest
 
 from qiskit.providers.honeywell import exceptions, Honeywell
 from qiskit.util import _has_connection
 
 HAS_NET_CONNECTION = None
+
+
+def _has_connection(hostname, port):
+    """Checks if internet connection exists to host via specified port.
+    If any exception is raised while trying to open a socket this will return
+    false.
+    Args:
+        hostname (str): Hostname to connect to.
+        port (int): Port to connect to
+    Returns:
+        bool: Has connection or not
+    """
+    try:
+        host = socket.gethostbyname(hostname)
+        socket.create_connection((host, port), 2).close()
+        return True
+    except Exception:  # pylint: disable=broad-except
+        return False
 
 
 def online_test(func):
