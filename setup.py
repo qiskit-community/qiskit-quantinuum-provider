@@ -32,9 +32,11 @@ with open("README.md", "r") as fh:
 
 requirements = [
     'nest-asyncio>=1.2.0',
-    'qiskit-terra>=0.10',
+    'qiskit-terra>=0.16.0',
     'requests>=2.19',
-    'websockets>=7'
+    'websockets>=7',
+    'pyjwt>=1.7.1',
+    'keyring>=10.6.0',
 ]
 
 version_path = os.path.abspath(os.path.join(
