@@ -20,7 +20,6 @@ import socket
 import unittest
 
 from qiskit.providers.honeywell import exceptions, Honeywell
-from qiskit.util import _has_connection
 
 HAS_NET_CONNECTION = None
 
