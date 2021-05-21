@@ -158,6 +158,7 @@ class HoneywellJob(BaseJob):
         self._job_ids = []
         self._experiment_results = []
 
+        self._qobj_payload = {}
         if qobj:
             validate_qobj_against_schema(qobj)
             self._qobj_payload = qobj.to_dict()
@@ -166,7 +167,6 @@ class HoneywellJob(BaseJob):
             self._experiments, self._qobj_config, _ = disassemble(qobj)
             self._status = JobStatus.INITIALIZING
         else:
-            self._qobj_payload = {}
             self._status = JobStatus.INITIALIZING
             self._job_ids.append(job_id)
 
