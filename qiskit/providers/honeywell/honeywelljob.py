@@ -161,6 +161,7 @@ class HoneywellJob(JobV1):
         self._experiment_results = []
 
         self._qobj_payload = {}
+        self._circuits_job = False
         if circuits:
             if isinstance(circuits, qobj_mod.QasmQobj):
                 self._qobj_payload = circuits.to_dict()
@@ -171,9 +172,11 @@ class HoneywellJob(JobV1):
             else:
                 self._experiments = circuits
                 self._job_config = job_config
+                self._circuits_job = True
         else:
             self._status = JobStatus.INITIALIZING
             self._job_ids.append(job_id)
+            self._job_config = {}
 
     def submit(self):
         """Submit the job to the backend."""
@@ -338,13 +341,20 @@ class HoneywellJob(JobV1):
             counts = dict(Counter(hex(int("".join(r), 2)) for r in [*zip(*list(res.values()))]))
 
             experiment_result = {
-                'shots': self._qobj_payload.get('config', {}).get('shots', 1),
+                'shots': self._job_config.get('shots', 1),
                 'success': ApiJobStatus(status) is ApiJobStatus.COMPLETED,
                 'data': {'counts': counts},
-                'header': self._qobj_payload[
-                    'experiments'][i]['header'] if self._qobj_payload else {},
                 'job_id': self._job_ids[i]
             }
+            if self._circuits_job:
+                if self._experiments[i].metadata is None:
+                    metadata = {}
+                else:
+                    metadata = self._experiments[i].metadata
+                experiment_result['header'] = metadata
+            else:
+                experiment_result['header'] = self._qobj_payload[
+                    'experiments'][i]['header'] if self._qobj_payload else {}
             results.append(experiment_result)
 
         result = {
