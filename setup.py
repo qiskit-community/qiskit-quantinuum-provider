@@ -35,7 +35,7 @@ requirements = [
     'qiskit-terra>=0.16.0',
     'requests>=2.19',
     'websockets>=7',
-    'pyjwt>=1.7.1',
+    'pyjwt>=1.7.1,<2',
     'keyring>=10.6.0',
 ]
 

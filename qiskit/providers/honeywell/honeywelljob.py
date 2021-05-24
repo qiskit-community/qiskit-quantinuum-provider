@@ -160,6 +160,7 @@ class HoneywellJob(JobV1):
         self._job_ids = []
         self._experiment_results = []
 
+        self._qobj_payload = {}
         if circuits:
             if isinstance(circuits, qobj_mod.QasmQobj):
                 self._qobj_payload = circuits.to_dict()
@@ -171,7 +172,6 @@ class HoneywellJob(JobV1):
                 self._experiments = circuits
                 self._job_config = job_config
         else:
-            self._qobj_payload = {}
             self._status = JobStatus.INITIALIZING
             self._job_ids.append(job_id)
 
