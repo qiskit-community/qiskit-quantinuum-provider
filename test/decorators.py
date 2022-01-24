@@ -26,11 +26,14 @@ HAS_NET_CONNECTION = None
 
 def _has_connection(hostname, port):
     """Checks if internet connection exists to host via specified port.
+
     If any exception is raised while trying to open a socket this will return
     false.
+
     Args:
         hostname (str): Hostname to connect to.
         port (int): Port to connect to
+
     Returns:
         bool: Has connection or not
     """

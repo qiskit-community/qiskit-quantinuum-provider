@@ -29,7 +29,7 @@
 import logging
 from collections import OrderedDict
 
-from qiskit.providers import BaseProvider
+from qiskit.providers import ProviderV1
 from qiskit.providers.models import BackendConfiguration
 
 from .api import HoneywellClient
@@ -41,7 +41,7 @@ from .honeywellbackend import HoneywellBackend
 logger = logging.getLogger(__name__)
 
 
-class HoneywellProvider(BaseProvider):
+class HoneywellProvider(ProviderV1):
     """Provider for Honeywell backends."""
 
     def __init__(self):

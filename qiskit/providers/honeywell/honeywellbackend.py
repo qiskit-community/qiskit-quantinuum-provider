@@ -27,17 +27,23 @@
 """Module for interfacing with a Honeywell Backend."""
 
 import logging
+import warnings
 
+from qiskit.circuit import QuantumCircuit
 from qiskit.exceptions import QiskitError
-from qiskit.providers import BaseBackend
+from qiskit.providers import BackendV1
 from qiskit.providers.models import BackendStatus
+from qiskit.providers import Options
+from qiskit.utils import deprecate_arguments
+from qiskit import qobj as qobj_mod
+from qiskit import pulse
 
 from .honeywelljob import HoneywellJob
 
 logger = logging.getLogger(__name__)
 
 
-class HoneywellBackend(BaseBackend):
+class HoneywellBackend(BackendV1):
     """Backend class interfacing with a Honeywell backend."""
 
     def __init__(self, name, configuration, provider, api):
@@ -56,16 +62,47 @@ class HoneywellBackend(BaseBackend):
         self._api = api
         self._name = name
 
-    def run(self, qobj):
-        """Run a Qobj.
+    @classmethod
+    def _default_options(cls):
+        return Options(shots=1024, priority='normal')
+
+    @deprecate_arguments({'qobj': 'run_input'})
+    def run(self, run_input, **kwargs):
+        """Run a circuit on the backend.
 
         Args:
-            qobj (Qobj): description of job
+            run_input (QuantumCircuit|list): A QuantumCircuit or a list of
+                QuantumCircuit objects to run on the backend
 
         Returns:
-            HoneywelJob: an instance derived from BaseJob
+            HoneywelJob: a handle to the async execution of the circuit(s) on
+                the backend
+        Raises:
+            QiskitError: If a pulse schedule is passed in for ``run_input``
         """
-        job = HoneywellJob(self, None, self._api, qobj=qobj)
+        if isinstance(run_input, qobj_mod.QasmQobj):
+            warnings.warn("Passing in a QASMQobj object to run() is "
+                          "deprecated and will be removed in a future "
+                          "release", DeprecationWarning)
+            job = HoneywellJob(self, None, self._api, circuits=run_input)
+        elif isinstance(run_input, (qobj_mod.PulseQobj, pulse.Schedule)):
+            raise QiskitError("Pulse jobs are not accepted")
+        else:
+            if isinstance(run_input, QuantumCircuit):
+                run_input = [run_input]
+            job_config = {}
+            for kwarg in kwargs:
+                if not hasattr(self.options, kwarg):
+                    warnings.warn(
+                        "Option %s is not used by this backend" % kwarg,
+                        UserWarning, stacklevel=2)
+                else:
+                    job_config[kwarg] = kwargs[kwarg]
+            if 'shots' not in job_config:
+                job_config['shots'] = self.options.shots
+                job_config['priority'] = self.options.priority
+            job = HoneywellJob(self, None, self._api, circuits=run_input,
+                               job_config=job_config)
         job.submit()
         return job
 

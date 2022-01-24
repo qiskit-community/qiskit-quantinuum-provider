@@ -39,9 +39,9 @@ from time import sleep
 import nest_asyncio
 import websockets
 from qiskit.assembler.disassemble import disassemble
-from qiskit.providers import BaseJob, JobError
+from qiskit.providers import JobV1, JobError
 from qiskit.providers.jobstatus import JOB_FINAL_STATES, JobStatus
-from qiskit.qobj import validate_qobj_against_schema
+from qiskit import qobj as qobj_mod
 from qiskit.result import Result
 
 from .apiconstants import ApiJobStatus
@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 nest_asyncio.apply()
 
 
-class HoneywellJob(BaseJob):
+class HoneywellJob(JobV1):
     """Representation of a job that will be execute on a Honeywell backend.
 
     Represent the jobs that will be executed on Honeywell devices. Jobs are
@@ -123,21 +123,24 @@ class HoneywellJob(BaseJob):
         ``JobStatus.ERROR`` and you can call ``error_message()`` to get more
         info.
     """
-    def __init__(self, backend, job_id, api=None, qobj=None):
+    def __init__(self, backend, job_id, api=None, circuits=None, job_config=None):
         """HoneywellJob init function.
 
-        We can instantiate jobs from two sources: A QObj, and an already submitted job returned by
-        the API servers.
+        We can instantiate jobs from two sources: A circuit, and an already
+        submitted job returned by the API servers.
 
         Args:
-            backend (BaseBackend): The backend instance used to run this job.
+            backend (HoneywellBackend): The backend instance used to run this job.
             job_id (str or None): The job ID of an already submitted job.
                 Pass `None` if you are creating a new job.
             api (HoneywellClient): Honeywell api client.
-            qobj (Qobj): The Quantum Object. See notes below
+            circuits (list): A list of quantum circuit objects to run. Can also
+                be a ``QasmQobj`` object, but this is deprecated (and won't raise a
+                warning (since it's raised by ``backend.run()``). See notes below
+            job_config (dict): A dictionary for the job configuration options
 
         Notes:
-            It is mandatory to pass either ``qobj`` or ``job_id``. Passing a ``qobj``
+            It is mandatory to pass either ``circuits`` or ``job_id``. Passing a ``circuits``
             will ignore ``job_id`` and will create an instance to be submitted to the
             API server for job creation. Passing only a `job_id` will create an instance
             representing an already-created job retrieved from the API server.
@@ -148,7 +151,6 @@ class HoneywellJob(BaseJob):
             self._api = api
         else:
             self._api = HoneywellClient(backend.provider().credentials)
-            print(backend.provider().credentials.api_url)
         self._creation_date = datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()
 
         # Properties used for caching.
@@ -159,23 +161,29 @@ class HoneywellJob(BaseJob):
         self._experiment_results = []
 
         self._qobj_payload = {}
-        if qobj:
-            validate_qobj_against_schema(qobj)
-            self._qobj_payload = qobj.to_dict()
-            # Extract individual experiments
-            #  if we want user qobj headers, the third argument contains it
-            self._experiments, self._qobj_config, _ = disassemble(qobj)
-            self._status = JobStatus.INITIALIZING
+        self._circuits_job = False
+        if circuits:
+            if isinstance(circuits, qobj_mod.QasmQobj):
+                self._qobj_payload = circuits.to_dict()
+                # Extract individual experiments
+                #  if we want user qobj headers, the third argument contains it
+                self._experiments, self._job_config, _ = disassemble(circuits)
+                self._status = JobStatus.INITIALIZING
+            else:
+                self._experiments = circuits
+                self._job_config = job_config
+                self._circuits_job = True
         else:
             self._status = JobStatus.INITIALIZING
             self._job_ids.append(job_id)
+            self._job_config = {}
 
     def submit(self):
         """Submit the job to the backend."""
         backend_name = self.backend().name()
 
         for exp in self._experiments:
-            submit_info = self._api.job_submit(backend_name, self._qobj_config, exp.qasm())
+            submit_info = self._api.job_submit(backend_name, self._job_config, exp.qasm())
             # Error in job after submission:
             # Transition to the `ERROR` final state.
             if 'error' in submit_info:
@@ -333,13 +341,20 @@ class HoneywellJob(BaseJob):
             counts = dict(Counter(hex(int("".join(r), 2)) for r in [*zip(*list(res.values()))]))
 
             experiment_result = {
-                'shots': self._qobj_payload.get('config', {}).get('shots', 1),
+                'shots': self._job_config.get('shots', 1),
                 'success': ApiJobStatus(status) is ApiJobStatus.COMPLETED,
                 'data': {'counts': counts},
-                'header': self._qobj_payload[
-                    'experiments'][i]['header'] if self._qobj_payload else {},
                 'job_id': self._job_ids[i]
             }
+            if self._circuits_job:
+                if self._experiments[i].metadata is None:
+                    metadata = {}
+                else:
+                    metadata = self._experiments[i].metadata
+                experiment_result['header'] = metadata
+            else:
+                experiment_result['header'] = self._qobj_payload[
+                    'experiments'][i]['header'] if self._qobj_payload else {}
             results.append(experiment_result)
 
         result = {
