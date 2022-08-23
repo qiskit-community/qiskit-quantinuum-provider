@@ -31,7 +31,7 @@ from requests.compat import urljoin
 from .session import RetrySession
 from .rest import Api
 
-_API_URL = 'https://qapi.honeywell.com'
+_API_URL = 'https://qapi.quantinuum.com'
 _API_VERSION = 'v1'
 
 
