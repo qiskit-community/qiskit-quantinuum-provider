@@ -26,11 +26,18 @@
 
 """Backends provided by Honeywell."""
 
+import warnings
+
 from .version import __version__
 
 from .honeywellprovider import HoneywellProvider
 from .honeywellbackend import HoneywellBackend
 from .honeywelljob import HoneywellJob
+
+# Setting future warning for package name change
+warnings.warn("This is the final release of qiskit-honeywell-provider. " \
+              "It will be replaced by the qiskit-quantinuum-provider package in the future.",
+              FutureWarning)
 
 # Global instance to be used as the entry point for convenience.
 Honeywell = HoneywellProvider()  # pylint: disable=invalid-name
