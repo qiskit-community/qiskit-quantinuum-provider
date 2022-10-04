@@ -35,7 +35,7 @@ from .honeywellbackend import HoneywellBackend
 from .honeywelljob import HoneywellJob
 
 # Setting future warning for package name change
-warnings.warn("This is the final release of qiskit-honeywell-provider. " \
+warnings.warn("This is the final release of qiskit-honeywell-provider. "
               "It will be replaced by the qiskit-quantinuum-provider package in the future.",
               FutureWarning)
 
