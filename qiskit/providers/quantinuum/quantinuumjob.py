@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@
 
 # pylint: disable=arguments-differ
 
-"""HoneywellJob module
+"""QuantinuumJob module
 
-This module is used for creating asynchronous job objects for Honeywell.
+This module is used for creating asynchronous job objects for Quantinuum.
 """
 import asyncio
 import json
@@ -46,7 +46,7 @@ from qiskit.result import Result
 
 from .apiconstants import ApiJobStatus
 
-from .api import HoneywellClient
+from .api import QuantinuumClient
 
 logger = logging.getLogger(__name__)
 
@@ -56,10 +56,10 @@ logger = logging.getLogger(__name__)
 nest_asyncio.apply()
 
 
-class HoneywellJob(JobV1):
-    """Representation of a job that will be execute on a Honeywell backend.
+class QuantinuumJob(JobV1):
+    """Representation of a job that will be execute on a Quantinuum backend.
 
-    Represent the jobs that will be executed on Honeywell devices. Jobs are
+    Represent the jobs that will be executed on Quantinuum devices. Jobs are
     intended to be created calling ``run()`` on a particular backend.
 
     Currently jobs that are created using a qobj can only have one experiment
@@ -69,7 +69,7 @@ class HoneywellJob(JobV1):
     Creating a ``Job`` instance does not imply running it. You need to do it in
     separate steps::
 
-        job = HoneywellJob(...)
+        job = QuantinuumJob(...)
         job.submit()
 
     An error while submitting a job will cause the next call to ``status()`` to
@@ -78,7 +78,7 @@ class HoneywellJob(JobV1):
 
         from qiskit.backends.jobstatus import JobStatus
 
-        job = HoneywellJob(...)
+        job = QuantinuumJob(...)
         job.submit()
 
         try:
@@ -96,7 +96,7 @@ class HoneywellJob(JobV1):
     ``Job`` instances also have `id()` and ``result()`` methods which will
     block::
 
-        job = HoneywellJob(...)
+        job = QuantinuumJob(...)
         job.submit()
 
         try:
@@ -124,16 +124,16 @@ class HoneywellJob(JobV1):
         info.
     """
     def __init__(self, backend, job_id, api=None, circuits=None, job_config=None):
-        """HoneywellJob init function.
+        """QuantinuumJob init function.
 
         We can instantiate jobs from two sources: A circuit, and an already
         submitted job returned by the API servers.
 
         Args:
-            backend (HoneywellBackend): The backend instance used to run this job.
+            backend (QuantinuumBackend): The backend instance used to run this job.
             job_id (str or None): The job ID of an already submitted job.
                 Pass `None` if you are creating a new job.
-            api (HoneywellClient): Honeywell api client.
+            api (QuantinuumClient): Quantinuum api client.
             circuits (list): A list of quantum circuit objects to run. Can also
                 be a ``QasmQobj`` object, but this is deprecated (and won't raise a
                 warning (since it's raised by ``backend.run()``). See notes below
@@ -150,7 +150,7 @@ class HoneywellJob(JobV1):
         if api:
             self._api = api
         else:
-            self._api = HoneywellClient(backend.provider().credentials)
+            self._api = QuantinuumClient(backend.provider().credentials)
         self._creation_date = datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()
 
         # Properties used for caching.
@@ -211,8 +211,8 @@ class HoneywellJob(JobV1):
             JobError: if attempted to recover a result on a failed job.
 
         Notes:
-            Currently when calling get_counts() on a result returned by a Honeywell
-            backend, since Honeywell backends currently support only running one
+            Currently when calling get_counts() on a result returned by a Quantinuum
+            backend, since Quantinuum backends currently support only running one
             experiment per job, do not supply an argument to the get_counts() function.
             Doing so may raise an exception.
         """
@@ -330,7 +330,7 @@ class HoneywellJob(JobV1):
         return self._api_error_msg
 
     def _process_results(self):
-        """Convert Honeywell job result to qiskit.Result"""
+        """Convert Quantinuum job result to qiskit.Result"""
         results = []
         self._status = JobStatus.DONE
         for i, res_resp in enumerate(self._experiment_results):

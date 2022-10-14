@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,24 +24,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Client for accessing Honeywell."""
+"""Client for accessing Quantinuum."""
 
 from requests.compat import urljoin
 
 from .session import RetrySession
 from .rest import Api
 
-_API_URL = 'https://qapi.honeywell.com'
+_API_URL = 'https://qapi.quantinuum.com'
 _API_VERSION = 'v1'
 
 
-class HoneywellClient:
-    """Client for programmatic access to the Honeywell API."""
+class QuantinuumClient:
+    """Client for programmatic access to the Quantinuum API."""
 
     def __init__(self,
                  credentials,
                  proxies: dict = None):
-        """ HoneywellClient constructor """
+        """ QuantinuumClient constructor """
         self.credentials = credentials
         self.client_api = self._init_service_client(proxies, self.credentials.api_url)
 

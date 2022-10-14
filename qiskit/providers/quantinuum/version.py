@@ -12,7 +12,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Functions for getting version information about honeywell provider."""
+"""Functions for getting version information about quantinuum provider."""
 
 
 import os

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Session customized for Honeywell access."""
+"""Session customized for Quantinuum access."""
 
 from requests import Session, RequestException
 from requests.adapters import HTTPAdapter
@@ -53,9 +53,9 @@ CLIENT_APPLICATION = 'qiskit-api-py'
 
 
 class RetrySession(Session):
-    """Session with retry and handling of Honeywell parameters.
+    """Session with retry and handling of Quantinuum parameters.
 
-    Custom session for use with Honeywell, that includes a retry mechanism based
+    Custom session for use with Quantinuum, that includes a retry mechanism based
     on urllib3 and handling of specific parameters based on
     ``requests.Session``.
     """
@@ -161,7 +161,7 @@ class RetrySession(Session):
                                        **kwargs)
             response.raise_for_status()
         except RequestException as ex:
-            # Wrap the requests exceptions into a Honeywell custom one, for
+            # Wrap the requests exceptions into a Quantinuum custom one, for
             # compatibility.
             message = str(ex)
             if self.credentials:

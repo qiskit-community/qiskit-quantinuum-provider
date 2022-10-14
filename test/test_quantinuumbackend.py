@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,40 +24,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Honeywell TestCase for testing backends."""
+"""Quantinuum TestCase for testing backends."""
 
 from qiskit import execute
 from qiskit import QuantumCircuit
 from qiskit.providers.jobstatus import JobStatus
 
-from qiskit.providers.honeywell import Honeywell
-from qiskit.providers.honeywell import HoneywellProvider
-from qiskit.providers.honeywell.api import HoneywellClient
+from qiskit.providers.quantinuum import Quantinuum
+from qiskit.providers.quantinuum import QuantinuumProvider
+from qiskit.providers.quantinuum.api import QuantinuumClient
 from qiskit.providers.models import BackendStatus
-from qiskit.providers.honeywell import HoneywellJob
+from qiskit.providers.quantinuum import QuantinuumJob
 
 from qiskit.test import QiskitTestCase
-from qiskit.providers.honeywell import HoneywellBackend
+from qiskit.providers.quantinuum import QuantinuumBackend
 
 from .decorators import online_test
 
 
-class HoneywellBackendTestCase(QiskitTestCase):
-    """Test case for Honeywell backend.
+class QuantinuumBackendTestCase(QiskitTestCase):
+    """Test case for Quantinuum backend.
 
     Members:
         proivder_cls (BaseProvider): provider to be used in this test case.
-        api_cls (HoneywellClient): api to be used in this test case
+        api_cls (QuantinuumClient): api to be used in this test case
         backend_cls (BaseBackend): backend to be used in this test case. Its
             instantiation can be further customized by overriding the
             ``_get_backend`` function.
         backend_name (str): name of backend to be used in tests.
     """
-    provider_cls = HoneywellProvider
-    api_cls = HoneywellClient
+    provider_cls = QuantinuumProvider
+    api_cls = QuantinuumClient
 
-    backend_cls = HoneywellBackend
-    backend_name = 'HQS-LT-1.0-APIVAL'
+    backend_cls = QuantinuumBackend
+    backend_name = 'H1-1SC'
 
     def setUp(self):
         super().setUp()
@@ -102,45 +102,45 @@ class HoneywellBackendTestCase(QiskitTestCase):
     @online_test
     def test_provider(self):
         """Test backend.provider()."""
-        Honeywell.load_account()
-        backend = Honeywell.get_backend(self.backend_name)
+        Quantinuum.load_account()
+        backend = Quantinuum.get_backend(self.backend_name)
         provider = backend.provider()
         self.assertEqual(provider, self.provider_cls())
 
     @online_test
     def test_status(self):
         """Test backend.status()."""
-        Honeywell.load_account()
-        backend = Honeywell.get_backend(self.backend_name)
+        Quantinuum.load_account()
+        backend = Quantinuum.get_backend(self.backend_name)
         status = backend.status()
         self.assertIsInstance(status, BackendStatus)
 
     @online_test
     def test_name(self):
         """Test backend.name()."""
-        Honeywell.load_account()
-        backend = Honeywell.get_backend(self.backend_name)
+        Quantinuum.load_account()
+        backend = Quantinuum.get_backend(self.backend_name)
         name = backend.name()
         self.assertEqual(name, self.backend_name)
 
     @online_test
     def _submit_job(self):
         """Helper method to submit job and return job instance"""
-        Honeywell.load_account()
-        backend = Honeywell.get_backend(self.backend_name)
+        Quantinuum.load_account()
+        backend = Quantinuum.get_backend(self.backend_name)
         return execute(self.circuit, backend)
 
     @online_test
     def test_submit_job(self):
         """Test running a single circuit."""
-        Honeywell.load_account()
+        Quantinuum.load_account()
         job = self._submit_job()
-        self.assertIsInstance(job, HoneywellJob)
+        self.assertIsInstance(job, QuantinuumJob)
 
     @online_test
     def test_get_job_result(self):
         """Test get result of job"""
-        Honeywell.load_account()
+        Quantinuum.load_account()
         job = self._submit_job()
         result = job.result()
         self.assertEqual(result.success, True)
@@ -150,7 +150,7 @@ class HoneywellBackendTestCase(QiskitTestCase):
     def test_get_job_status(self):
         """Test get status of job"""
         job = self._submit_job()
-        Honeywell.load_account()
+        Quantinuum.load_account()
         status = job.status()
         self.assertIsInstance(status, JobStatus)
 
@@ -161,7 +161,7 @@ class HoneywellBackendTestCase(QiskitTestCase):
     @online_test
     def test_get_creation_date(self):
         """Test get creation date of job"""
-        Honeywell.load_account()
+        Quantinuum.load_account()
         job = self._submit_job()
         creation_date = job.creation_date()
         self.assertIsNotNone(creation_date)
@@ -169,7 +169,7 @@ class HoneywellBackendTestCase(QiskitTestCase):
     @online_test
     def test_get_job_id(self):
         """Test get id of job"""
-        Honeywell.load_account()
+        Quantinuum.load_account()
         job = self._submit_job()
         job_id = job.job_id()
         self.assertIsNotNone(job_id)
@@ -177,12 +177,12 @@ class HoneywellBackendTestCase(QiskitTestCase):
     @online_test
     def test_job_with_id(self):
         """Test creating a job with an id."""
-        Honeywell.load_account()
-        backend = Honeywell.get_backend(self.backend_name)
+        Quantinuum.load_account()
+        backend = Quantinuum.get_backend(self.backend_name)
         job = self._submit_job()
         job_id = job.job_id()
         credentials = backend.provider().credentials
-        job_created_with_id = HoneywellJob(backend, job_id, self.api_cls(credentials))
+        job_created_with_id = QuantinuumJob(backend, job_id, self.api_cls(credentials))
         result = job_created_with_id.result()
         self.assertEqual(result.success, True)
         return result

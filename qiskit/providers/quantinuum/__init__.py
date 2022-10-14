@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,31 +24,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Values used by the API for different values."""
+"""Backends provided by Quantinuum."""
 
-import enum
+from .version import __version__
 
+from .quantinuumprovider import QuantinuumProvider
+from .quantinuumbackend import QuantinuumBackend
+from .quantinuumjob import QuantinuumJob
 
-class ApiJobStatus(enum.Enum):
-    """Possible values used by the API for a job status.
-
-    The enum names represent the strings returned by the API verbatim in
-    several endpoints (`status()`, websocket information, etc). The general
-    flow is:
-
-    `QUEUED -> RUNNING -> COMPLETED`
-    """
-
-    QUEUED = 'queued'
-    RUNNING = 'running'
-    COMPLETED = 'completed'
-
-    CANCELED = 'canceled'
-    FAILED = 'failed'
-
-
-API_JOB_FINAL_STATES = (
-    ApiJobStatus.COMPLETED,
-    ApiJobStatus.CANCELED,
-    ApiJobStatus.FAILED
-)
+# Global instance to be used as the entry point for convenience.
+Quantinuum = QuantinuumProvider()  # pylint: disable=invalid-name

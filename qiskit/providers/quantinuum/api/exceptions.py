@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Exceptions related to the Honeywell Api."""
+"""Exceptions related to the Quantinuum Api."""
 
-from qiskit.providers.honeywell.exceptions import HoneywellError
+from qiskit.providers.quantinuum.exceptions import QuantinuumError
 
 
-class ApiError(HoneywellError):
-    """HoneywellConnector API error handling base class."""
+class ApiError(QuantinuumError):
+    """QuantinuumConnector API error handling base class."""
 
     def __init__(self, usr_msg=None, dev_msg=None):
         """ApiError.

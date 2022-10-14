@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,16 +45,16 @@ import keyring
 
 from ..api.session import RetrySession
 
-from ..api.honeywellclient import _API_URL, _API_VERSION
+from ..api.quantinuumclient import _API_URL, _API_VERSION
 
-from ..exceptions import HoneywellError
+from ..exceptions import QuantinuumError
 
 DEFAULT_QISKITRC_FILE = Path.home()/'.qiskit'/'qhprc'
-SECTION_NAME = 'qiskit-honeywell-provider'
+SECTION_NAME = 'qiskit-quantinuum-provider'
 logger = logging.getLogger(__name__)
 
 
-class HoneywellCredentialsError(HoneywellError):
+class QuantinuumCredentialsError(QuantinuumError):
     """ Base class for errors raised during credential management """
     pass
 
@@ -116,7 +116,7 @@ class Credentials:
 
         # Use regular expression to canonicalize URL bits so we can recombine
         # into validated URL
-        api_url_validator = re.compile("(https://)?([^/]*)(api.honeywell.com)(/+v[0-9]+)?/?(.*)")
+        api_url_validator = re.compile("(https://)?([^/]*)(api.quantinuum.com)(/+v[0-9]+)?/?(.*)")
         m = api_url_validator.match(url)
         if m:
             _, api_prefix, api_base, api_version, api_rest = m.groups()
@@ -301,7 +301,7 @@ class Credentials:
         try:
             config_parser.read(str(filename))
         except ParsingError as ex:
-            raise HoneywellCredentialsError(str(ex))
+            raise QuantinuumCredentialsError(str(ex))
 
         for k, v in {'user_name': self.user_name, 'api_url': _API_URL}.items():
             setattr(self, k, config_parser.get(SECTION_NAME, k, fallback=v))
@@ -324,7 +324,7 @@ class Credentials:
         try:
             config_parser.read(str(filename))
         except ParsingError as ex:
-            raise HoneywellCredentialsError(str(ex))
+            raise QuantinuumCredentialsError(str(ex))
 
         if not config_parser.has_section(SECTION_NAME):
             config_parser[SECTION_NAME] = {}

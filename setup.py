@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,31 +40,31 @@ requirements = [
 ]
 
 version_path = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), 'qiskit', 'providers', 'honeywell',
+    os.path.dirname(__file__), 'qiskit', 'providers', 'quantinuum',
     'VERSION.txt'))
 
 with open(version_path, 'r') as fd:
     version_str = fd.read().rstrip()
 
 setuptools.setup(
-    name="qiskit-honeywell-provider",
+    name="qiskit-quantinuum-provider",
     version=version_str,
-    author="Honeywell",
-    author_email="dominic.lucchetti@honeywell.com",
+    author="Quantinuum",
+    author_email="dominic.lucchetti@quantinuum.com",
     license="Apache 2.0",
-    description="Qiskit provider for accessing the quantum devices at Honeywell",
+    description="Qiskit provider for accessing the quantum devices at Quantinuum",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url="https://github.com/qiskit-community/qiskit-honeywell-provider",
+    url="https://github.com/qiskit-community/qiskit-quantinuum-provider",
     packages=setuptools.find_namespace_packages(include=['qiskit.*']),
     install_requires=requirements,
     python_requires=">=3.6",
     include_package_data=True,
     keywords="qiskit quantum",
     project_urls={
-        "Bug Tracker": "https://github.com/qiskit-community/qiskit-honeywell-provider/issues",
+        "Bug Tracker": "https://github.com/qiskit-community/qiskit-quantinuum-provider/issues",
         "Documentation": "https://qiskit.org/documentation/",
-        "Source Code": "https://github.com/qiskit-community/qiskit-honeywell-provider"
+        "Source Code": "https://github.com/qiskit-community/qiskit-quantinuum-provider"
     },
     classifiers=[
         "License :: OSI Approved :: Apache Software License",

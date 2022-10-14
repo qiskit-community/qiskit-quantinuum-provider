@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,31 +36,31 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Exception for the Honeywell module."""
+"""Exception for the Quantinuum module."""
 
 from qiskit.exceptions import QiskitError
 
 
-class HoneywellError(QiskitError):
-    """Base class for errors raised by the Honeywell provider module."""
+class QuantinuumError(QiskitError):
+    """Base class for errors raised by the Quantinuum provider module."""
     pass
 
 
-class HoneywellAccountError(HoneywellError):
+class QuantinuumAccountError(QuantinuumError):
     """Base class for errors raised by account management."""
     pass
 
 
-class HoneywellCredentialsNotFound(HoneywellError):
+class QuantinuumCredentialsNotFound(QuantinuumError):
     """ Base class for errors found without credentials."""
     pass
 
 
-class HoneywellBackendError(HoneywellError):
-    """HoneywellBackend Errors"""
+class QuantinuumBackendError(QuantinuumError):
+    """QuantinuumBackend Errors"""
     pass
 
 
-class HoneywellBackendValueError(HoneywellError, ValueError):
-    """Value errors thrown within HoneywellBackend """
+class QuantinuumBackendValueError(QuantinuumError, ValueError):
+    """Value errors thrown within QuantinuumBackend """
     pass
