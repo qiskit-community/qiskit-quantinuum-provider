@@ -56,7 +56,6 @@ class QuantinuumProvider(ProviderV1):
         self._backends = None
         self.credentials = Credentials()
 
-
     def load_account(self):
         """ Obtain stored credentials """
         self.credentials = Credentials()
@@ -65,7 +64,7 @@ class QuantinuumProvider(ProviderV1):
             raise QuantinuumCredentialsNotFound
 
         self._api = QuantinuumClient(credentials=self.credentials,
-                                    proxies=self.credentials.proxies)
+                                     proxies=self.credentials.proxies)
 
         self._api.authenticate()
 
@@ -78,7 +77,7 @@ class QuantinuumProvider(ProviderV1):
         """ Save the credentials onto disk """
         self.credentials = Credentials(user_name, proxies, api_url)
         self._api = QuantinuumClient(credentials=self.credentials,
-                                    proxies=self.credentials.proxies)
+                                     proxies=self.credentials.proxies)
         self._api.authenticate()
         if filename:
             self.credentials.save_config(filename=filename, overwrite=overwrite)

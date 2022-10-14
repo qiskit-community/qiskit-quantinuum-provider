@@ -102,7 +102,7 @@ class QuantinuumBackend(BackendV1):
                 job_config['shots'] = self.options.shots
                 job_config['priority'] = self.options.priority
             job = QuantinuumJob(self, None, self._api, circuits=run_input,
-                               job_config=job_config)
+                                job_config=job_config)
         job.submit()
         return job
 
