@@ -27,7 +27,7 @@
 """Quantinuum TestCase for testing Providers."""
 
 from qiskit.test.providers import ProviderTestCase
-from qiskit.providers.quantinuum import QuantinuumProvider
+from qiskit_quantinuum import QuantinuumProvider
 
 from .decorators import online_test
 

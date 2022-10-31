@@ -1,1 +1,1 @@
-include qiskit/providers/quantinuum/VERSION.txt
+include qiskit_quantinuum/VERSION.txt

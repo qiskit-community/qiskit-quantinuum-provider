@@ -19,7 +19,7 @@ import os
 import socket
 import unittest
 
-from qiskit.providers.quantinuum import exceptions, Quantinuum
+from qiskit_quantinuum import exceptions, Quantinuum
 
 HAS_NET_CONNECTION = None
 

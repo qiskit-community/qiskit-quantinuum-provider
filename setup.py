@@ -40,7 +40,7 @@ requirements = [
 ]
 
 version_path = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), 'qiskit', 'providers', 'quantinuum',
+    os.path.dirname(__file__), 'qiskit_quantinuum',
     'VERSION.txt'))
 
 with open(version_path, 'r') as fd:

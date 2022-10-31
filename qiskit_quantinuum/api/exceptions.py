@@ -38,7 +38,7 @@
 
 """Exceptions related to the Quantinuum Api."""
 
-from qiskit.providers.quantinuum.exceptions import QuantinuumError
+from qiskit_quantinuum.exceptions import QuantinuumError
 
 
 class ApiError(QuantinuumError):

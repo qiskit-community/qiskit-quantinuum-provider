@@ -30,7 +30,6 @@ import logging
 import warnings
 
 from qiskit.circuit import QuantumCircuit
-from qiskit.exceptions import QiskitError
 from qiskit.providers import BackendV1
 from qiskit.providers.models import BackendStatus
 from qiskit.providers import Options
@@ -38,6 +37,7 @@ from qiskit.utils import deprecate_arguments
 from qiskit import qobj as qobj_mod
 from qiskit import pulse
 
+from qiskit_quantinuum.exceptions import QiskitError
 from .quantinuumjob import QuantinuumJob
 
 logger = logging.getLogger(__name__)

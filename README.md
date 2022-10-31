@@ -23,7 +23,7 @@ will always install the latest version.
 Once the package is installed, you can access the provider from Qiskit via the following import:
 
 ```python3
-from qiskit.providers.quantinuum import Quantinuum
+from qiskit_quantinuum import Quantinuum
 ```
 
 You will need credentials for the Quantinuum Quantum Service. Credentials are

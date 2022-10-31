@@ -29,15 +29,14 @@
 from qiskit import execute
 from qiskit import QuantumCircuit
 from qiskit.providers.jobstatus import JobStatus
-
-from qiskit.providers.quantinuum import Quantinuum
-from qiskit.providers.quantinuum import QuantinuumProvider
-from qiskit.providers.quantinuum.api import QuantinuumClient
 from qiskit.providers.models import BackendStatus
-from qiskit.providers.quantinuum import QuantinuumJob
-
 from qiskit.test import QiskitTestCase
-from qiskit.providers.quantinuum import QuantinuumBackend
+
+from qiskit_quantinuum import Quantinuum
+from qiskit_quantinuum import QuantinuumProvider
+from qiskit_quantinuum import QuantinuumJob
+from qiskit_quantinuum import QuantinuumBackend
+from qiskit_quantinuum.api import QuantinuumClient
 
 from .decorators import online_test
 

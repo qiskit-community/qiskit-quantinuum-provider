@@ -18,8 +18,8 @@
 
 from unittest import mock
 
-from qiskit.providers.quantinuum.credentials import Credentials
-from qiskit.providers.quantinuum.api.quantinuumclient import _API_URL, _API_VERSION
+from qiskit_quantinuum.credentials import Credentials
+from qiskit_quantinuum.api.quantinuumclient import _API_URL, _API_VERSION
 
 from qiskit.test import QiskitTestCase
 
