@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,16 +24,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Honeywell TestCase for testing Providers."""
+"""Quantinuum TestCase for testing Providers."""
 
 from qiskit.test.providers import ProviderTestCase
-from qiskit.providers.honeywell import HoneywellProvider
+from qiskit_quantinuum import QuantinuumProvider
 
 from .decorators import online_test
 
 
-class HoneywellProviderTestCase(ProviderTestCase):
-    """Test case for Honeywell Provider.
+class QuantinuumProviderTestCase(ProviderTestCase):
+    """Test case for Quantinuum Provider.
 
     Members:
         provider_cls (BaseProvider): provider to be used in this test case. Its
@@ -41,8 +41,8 @@ class HoneywellProviderTestCase(ProviderTestCase):
             ``_get_provider`` function.
         backend_names (list<str>): names of backends provided by the provider.
     """
-    provider_cls = HoneywellProvider
-    backend_names = ['HQS-LT-1.0', 'HQS-LT-1.0-APIVAL']
+    provider_cls = QuantinuumProvider
+    backend_names = ['H1-1SC', 'H1-2SC']
 
     @online_test
     def setUp(self):

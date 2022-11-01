@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Backend REST adapter for the Honeywell Api."""
+"""Backend REST adapter for the Quantinuum Api."""
 
 from .base import RestAdapterBase
 

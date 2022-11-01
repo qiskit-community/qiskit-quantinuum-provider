@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,31 +36,33 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Exception for the Honeywell module."""
-
-from qiskit.exceptions import QiskitError
+"""REST clients for accessing Quantinuum."""
 
 
-class HoneywellError(QiskitError):
-    """Base class for errors raised by the Honeywell provider module."""
-    pass
+class RestAdapterBase:
+    """Base class for REST adapters."""
 
+    URL_MAP = {}
+    """Mapping between the internal name of an endpoint and the actual URL"""
 
-class HoneywellAccountError(HoneywellError):
-    """Base class for errors raised by account management."""
-    pass
+    def __init__(self, session, prefix_url=''):
+        """RestAdapterBase constructor.
 
+        Args:
+            session (Session): The session instance to use
+            prefix_url (str): string to be prefixed to all urls.
+        """
+        self.session = session
+        self.prefix_url = prefix_url
 
-class HoneywellCredentialsNotFound(HoneywellError):
-    """ Base class for errors found without credentials."""
-    pass
+    def get_url(self, identifier):
+        """Return the resolved URL for the specified identifier.
 
+        Args:
+            identifier (str): internal identifier of the endpoint.
 
-class HoneywellBackendError(HoneywellError):
-    """HoneywellBackend Errors"""
-    pass
-
-
-class HoneywellBackendValueError(HoneywellError, ValueError):
-    """Value errors thrown within HoneywellBackend """
-    pass
+        Returns:
+            str: the resolved URL of the endpoint (relative to the session
+                base url).
+        """
+        return '{}{}'.format(self.prefix_url, self.URL_MAP[identifier])

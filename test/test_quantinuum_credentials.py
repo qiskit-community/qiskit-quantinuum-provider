@@ -18,10 +18,10 @@
 
 from unittest import mock
 
-from qiskit.providers.honeywell.credentials import Credentials
-from qiskit.providers.honeywell.api.honeywellclient import _API_URL, _API_VERSION
-
 from qiskit.test import QiskitTestCase
+
+from qiskit_quantinuum.credentials import Credentials
+from qiskit_quantinuum.api.quantinuumclient import _API_URL, _API_VERSION
 
 
 class TestCredentials(QiskitTestCase):
@@ -46,14 +46,14 @@ class TestCredentials(QiskitTestCase):
                 for v_v in api_valid_version:
                     if 'v' in v_v:
                         for r_v in api_valid_rest:
-                            url = h_v+p_v+'api.honeywell.com'+v_v+r_v
+                            url = h_v+p_v+'api.quantinuum.com'+v_v+r_v
                             api, version = c._canonicalize_url(url)
-                            self.assertEqual(api, 'https://'+p_v+'api.honeywell.com')
+                            self.assertEqual(api, 'https://'+p_v+'api.quantinuum.com')
                             self.assertEqual(version, v_v.strip('/'))
                     else:
-                        url = h_v+p_v+'api.honeywell.com'+v_v
+                        url = h_v+p_v+'api.quantinuum.com'+v_v
                         api, version = c._canonicalize_url(url)
-                        self.assertEqual(api, 'https://'+p_v+'api.honeywell.com')
+                        self.assertEqual(api, 'https://'+p_v+'api.quantinuum.com')
                         self.assertEqual(version, _API_VERSION)
 
     def test_credentials_invalid_urls(self):
@@ -73,13 +73,13 @@ class TestCredentials(QiskitTestCase):
                     # Now invalidate any single component and validate we get the
                     # default api url/version
                     for h_i in https_invalid:
-                        url = h_i+p_v+'api.honeywell.com'+v_v
+                        url = h_i+p_v+'api.quantinuum.com'+v_v
                         api, version = c._canonicalize_url(url)
                         self.assertEqual(api, _API_URL)
                         self.assertEqual(version, _API_VERSION)
 
                     for v_i in api_invalid_version:
-                        url = h_v+p_v+'api.honeywell.com'+v_i
+                        url = h_v+p_v+'api.quantinuum.com'+v_i
                         api, version = c._canonicalize_url(url)
                         self.assertEqual(api, _API_URL)
                         self.assertEqual(version, _API_VERSION)
@@ -88,7 +88,7 @@ class TestCredentials(QiskitTestCase):
                         # If we don't have a valid version, verify that even
                         # valid (non-empty) rest elements will invalidate URL
                         for r_v in api_valid_rest:
-                            url = h_v+p_v+'api.honeywell.com'+v_v+r_v
+                            url = h_v+p_v+'api.quantinuum.com'+v_v+r_v
                             api, version = c._canonicalize_url(url)
                             self.assertEqual(api, _API_URL)
                             self.assertEqual(version, _API_VERSION)

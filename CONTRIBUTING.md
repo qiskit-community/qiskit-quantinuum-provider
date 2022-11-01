@@ -5,10 +5,10 @@ included in the qiskit documentation:
 
 https://qiskit.org/documentation/contributing_to_qiskit.html
 
-## Contributing to Qiskit Honeywell Provider
+## Contributing to Qiskit Quantinuum Provider
 
 In addition to the general guidelines there are specific details for
-contributing to the Honeywell provider, these are documented below.
+contributing to the Quantinuum provider, these are documented below.
 
 ### Tests
 
@@ -41,26 +41,26 @@ you can do this faster with the `-n`/`--no-discover` option. For example:
 
 to run a module:
 ```
-tox -epy37 -- -n test.test_honeywell_credentials
+tox -epy37 -- -n test.test_quantinuum_credentials
 ```
 or to run the same module by path:
 
 ```
-tox -epy37 -- -n test/test_honeywell_credentials.py
+tox -epy37 -- -n test/test_quantinuum_credentials.py
 ```
 to run a class:
 
 ```
-tox -epy37 -- -n test.test_honeywell_credentials.TestCredentials
+tox -epy37 -- -n test.test_quantinuum_credentials.TestCredentials
 ```
 to run a method:
 ```
-tox -epy37 -- -n test.test_honeywell_credentials.TestCredentials.test_discover_credentials_no_creds
+tox -epy37 -- -n test.test_quantinuum_credentials.TestCredentials.test_discover_credentials_no_creds
 ```
 
 ##### Online Tests
 
-Some tests require that you have a Honeywell account configured. These tests
+Some tests require that you have a Quantinuum account configured. These tests
 will be skipped if no credentials are available. If you want to run these tests
 you need to have credentials configured either via the `HQS_API_KEY` environment
 variable, or via a saved account locally. If you do not want to run these tests

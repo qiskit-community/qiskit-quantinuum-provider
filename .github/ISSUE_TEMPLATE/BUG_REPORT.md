@@ -9,7 +9,7 @@ labels: bug
 
 ### Information
 
-- **Qiskit Honeywell Provider version**:
+- **Qiskit Quantinuum Provider version**:
 - **Python version**:
 - **Operating system**:
 

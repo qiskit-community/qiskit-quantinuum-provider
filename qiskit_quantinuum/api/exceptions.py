@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,33 +36,35 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""REST clients for accessing Honeywell."""
+"""Exceptions related to the Quantinuum Api."""
+
+from qiskit_quantinuum.exceptions import QuantinuumError
 
 
-class RestAdapterBase:
-    """Base class for REST adapters."""
+class ApiError(QuantinuumError):
+    """QuantinuumConnector API error handling base class."""
 
-    URL_MAP = {}
-    """Mapping between the internal name of an endpoint and the actual URL"""
-
-    def __init__(self, session, prefix_url=''):
-        """RestAdapterBase constructor.
-
-        Args:
-            session (Session): The session instance to use
-            prefix_url (str): string to be prefixed to all urls.
-        """
-        self.session = session
-        self.prefix_url = prefix_url
-
-    def get_url(self, identifier):
-        """Return the resolved URL for the specified identifier.
+    def __init__(self, usr_msg=None, dev_msg=None):
+        """ApiError.
 
         Args:
-            identifier (str): internal identifier of the endpoint.
-
-        Returns:
-            str: the resolved URL of the endpoint (relative to the session
-                base url).
+            usr_msg (str): Short user facing message describing error.
+            dev_msg (str or None): More detailed message to assist
+                developer with resolving issue.
         """
-        return '{}{}'.format(self.prefix_url, self.URL_MAP[identifier])
+        super().__init__(usr_msg)
+        self.usr_msg = usr_msg
+        self.dev_msg = dev_msg
+
+    def __repr__(self):
+        return repr(self.dev_msg)
+
+    def __str__(self):
+        return str(self.usr_msg)
+
+
+class RequestsApiError(ApiError):
+    """Exception re-raising a RequestException."""
+    def __init__(self, original_exception, *args, **kwargs):
+        self.original_exception = original_exception
+        super().__init__(*args, **kwargs)

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Provider for a Honeywell backends."""
+"""Provider for a Quantinuum backends."""
 
 import logging
 from collections import OrderedDict
@@ -32,23 +32,23 @@ from collections import OrderedDict
 from qiskit.providers import ProviderV1
 from qiskit.providers.models import BackendConfiguration
 
-from .api import HoneywellClient
+from .api import QuantinuumClient
 from .credentials import Credentials
-from .exceptions import HoneywellCredentialsNotFound
-from .honeywellbackend import HoneywellBackend
+from .exceptions import QuantinuumCredentialsNotFound
+from .quantinuumbackend import QuantinuumBackend
 
 
 logger = logging.getLogger(__name__)
 
 
-class HoneywellProvider(ProviderV1):
-    """Provider for Honeywell backends."""
+class QuantinuumProvider(ProviderV1):
+    """Provider for Quantinuum backends."""
 
     def __init__(self):
-        """Return a new HoneywellProvider."""
+        """Return a new QuantinuumProvider."""
         super().__init__()
 
-        # Get a connection to Honeywell.
+        # Get a connection to Quantinuum.
         self._api = None
         self.credentials = None
 
@@ -61,10 +61,10 @@ class HoneywellProvider(ProviderV1):
         self.credentials = Credentials()
 
         if not self.credentials.user_name or not self.credentials.access_token:
-            raise HoneywellCredentialsNotFound
+            raise QuantinuumCredentialsNotFound
 
-        self._api = HoneywellClient(credentials=self.credentials,
-                                    proxies=self.credentials.proxies)
+        self._api = QuantinuumClient(credentials=self.credentials,
+                                     proxies=self.credentials.proxies)
 
         self._api.authenticate()
 
@@ -76,8 +76,8 @@ class HoneywellProvider(ProviderV1):
                      api_url: str = None):
         """ Save the credentials onto disk """
         self.credentials = Credentials(user_name, proxies, api_url)
-        self._api = HoneywellClient(credentials=self.credentials,
-                                    proxies=self.credentials.proxies)
+        self._api = QuantinuumClient(credentials=self.credentials,
+                                     proxies=self.credentials.proxies)
         self._api.authenticate()
         if filename:
             self.credentials.save_config(filename=filename, overwrite=overwrite)
@@ -106,7 +106,7 @@ class HoneywellProvider(ProviderV1):
         """Return the remote backends available.
 
         Returns:
-            dict[str:HoneywellBackend]: a dict of the remote backend instances,
+            dict[str:QuantinuumBackend]: a dict of the remote backend instances,
                 keyed by backend name.
         """
         configuration = {
@@ -227,7 +227,7 @@ class HoneywellProvider(ProviderV1):
         ret = OrderedDict()
         machine_list = self._api.list_backends()
         for machine in machine_list:
-            backend_cls = HoneywellBackend
+            backend_cls = QuantinuumBackend
             configuration['backend_name'] = machine['name']
             configuration['n_qubits'] = machine['n_qubits']
             ret[machine['name']] = backend_cls(

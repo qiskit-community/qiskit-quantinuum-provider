@@ -19,7 +19,7 @@ import os
 import socket
 import unittest
 
-from qiskit.providers.honeywell import exceptions, Honeywell
+from qiskit_quantinuum import exceptions, Quantinuum
 
 HAS_NET_CONNECTION = None
 
@@ -75,15 +75,15 @@ def online_test(func):
             raise unittest.SkipTest('Skipping online tests')
 
         if HAS_NET_CONNECTION is None:
-            HAS_NET_CONNECTION = _has_connection('qapi.honeywell.com', 443)
+            HAS_NET_CONNECTION = _has_connection('qapi.quantinuum.com', 443)
 
         if not HAS_NET_CONNECTION:
             raise unittest.SkipTest("Test requires internet connection.")
 
         try:
-            Honeywell.load_account()
-        except exceptions.HoneywellError:
-            raise unittest.SkipTest("Test requires valid, configured honeywell credentials")
+            Quantinuum.load_account()
+        except exceptions.QuantinuumError:
+            raise unittest.SkipTest("Test requires valid, configured quantinuum credentials")
 
         return func(self, *args, **kwargs)
 

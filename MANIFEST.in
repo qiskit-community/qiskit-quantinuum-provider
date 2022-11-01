@@ -1,1 +1,1 @@
-include qiskit/providers/honeywell/VERSION.txt
+include qiskit_quantinuum/VERSION.txt

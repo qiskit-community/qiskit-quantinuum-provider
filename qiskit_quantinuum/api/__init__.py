@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Copyright 2019-2020 Honeywell, Intl. (www.honeywell.com)
+# Copyright 2019-2020 Quantinuum, Intl. (www.quantinuum.com)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,20 +24,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Backends provided by Honeywell."""
+"""Quantinuum API connector and utilities."""
 
-import warnings
-
-from .version import __version__
-
-from .honeywellprovider import HoneywellProvider
-from .honeywellbackend import HoneywellBackend
-from .honeywelljob import HoneywellJob
-
-# Setting future warning for package name change
-warnings.warn("This is the final release of qiskit-honeywell-provider. "
-              "It will be replaced by the qiskit-quantinuum-provider package in the future.",
-              FutureWarning)
-
-# Global instance to be used as the entry point for convenience.
-Honeywell = HoneywellProvider()  # pylint: disable=invalid-name
+from .quantinuumclient import QuantinuumClient
