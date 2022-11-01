@@ -23,6 +23,7 @@ from qiskit.test import QiskitTestCase
 from qiskit_quantinuum.credentials import Credentials
 from qiskit_quantinuum.api.quantinuumclient import _API_URL, _API_VERSION
 
+
 class TestCredentials(QiskitTestCase):
 
     @mock.patch.object(Credentials, '_login',
