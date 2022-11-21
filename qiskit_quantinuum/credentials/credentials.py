@@ -32,18 +32,14 @@ import re
 
 from pathlib import Path
 import datetime
-from http import HTTPStatus
 
 from getpass import getpass
 
-import requests
 from requests.compat import urljoin
 
 import jwt
 
 import keyring
-
-from ..api.session import RetrySession
 
 from ..api.quantinuumclient import _API_URL, _API_VERSION
 
@@ -65,28 +61,28 @@ class Credentials:
     with our credentialing service.
     """
     def __init__(self,
+                 pytket_backend,
                  user_name: str = None,
-                 proxies: dict = None,
                  api_url: str = None):
         """
         Credentials Constructor
         """
         # Default empty config
         self.user_name = None
-        self.proxies = None
         self.api_url = None
         self.refresh_token = None
 
         # Load configuration from config file
         self.load_config(DEFAULT_QISKITRC_FILE)
 
+        # Create pytket backend
+        self.pytket_backend = pytket_backend
+
         # Allow overrides if provided
         if user_name is not None:
             self.user_name = user_name
         if api_url is not None:
             self.api_url = api_url
-        if proxies is not None:
-            self.proxies = proxies
 
         # If we don't have a valid username, request it from the user now.
         # NOTE: we want to avoid any prompt for password until we are properly
@@ -105,6 +101,12 @@ class Credentials:
             self.url = urljoin(_API_URL, self.api_version)
             self.keyring_service = 'HQS-API'
 
+        # Load existing tokens into pytket backend
+        self.pytket_backend.api_handler._cred_store._id_token = self._get_token('id_token')
+        self.pytket_backend.api_handler._cred_store._refresh_token = \
+            self._get_token('refresh_token')
+        self.pytket_backend.api_handler._cred_store._user_name = self.user_name
+
     @staticmethod
     def _canonicalize_url(url):
         """ Provided a URL, determine if it is near-enough to expected to
@@ -116,13 +118,17 @@ class Credentials:
 
         # Use regular expression to canonicalize URL bits so we can recombine
         # into validated URL
-        api_url_validator = re.compile("(https://)?([^/]*)(api.quantinuum.com)(/+v[0-9]+)?/?(.*)")
-        m = api_url_validator.match(url)
-        if m:
-            _, api_prefix, api_base, api_version, api_rest = m.groups()
-            if api_rest and api_version is None:
-                valid_url = False
-            elif api_prefix is None:
+        if url:
+            api_url_validator = \
+                re.compile("(https://)?([^/]*)(api.quantinuum.com)(/+v[0-9]+)?/?(.*)")
+            m = api_url_validator.match(url)
+            if m:
+                _, api_prefix, api_base, api_version, api_rest = m.groups()
+                if api_rest and api_version is None:
+                    valid_url = False
+                elif api_prefix is None:
+                    valid_url = False
+            else:
                 valid_url = False
         else:
             valid_url = False
@@ -145,33 +151,6 @@ class Credentials:
         """Return the session access token."""
         return self._login()
 
-    def _request_tokens(self, body):
-        """ Method to send login request to machine api and save tokens. """
-        try:
-            sess = RetrySession(self.url,
-                                proxies=self.proxies)
-
-            # send request to login
-            response = sess.post(
-                '/login',
-                json=body,
-            )
-
-            # reset body to delete credentials
-            body = {}
-
-            if response.status_code != HTTPStatus.OK:
-                return response.status_code, response.json()
-
-            else:
-                print("***Successfully logged in***")
-                self._save_tokens(response.json()['id-token'], response.json()['refresh-token'])
-                return response.status_code, None
-
-        except requests.exceptions.RequestException as exception:
-            print(exception)
-            return None, None
-
     def _get_credentials(self, pwd_prompt=True):
         """ Method to ask for user's credentials """
         user_name = self.user_name
@@ -181,44 +160,18 @@ class Credentials:
             pwd = None
         return user_name, pwd
 
-    def _authenticate(self, action=None):
-        """ This method makes requests to refresh or get new id-token.
-        If a token refresh fails due to token being expired, credentials
-        get requested from user.
+    def _authenticate(self):
+        """ This method makes requests to refresh or get new id-token via pytket.
+        Pytket will request user/password information if required.
         """
-        # login body
-        body = {}
+        self.pytket_backend.api_handler.login()
 
-        if action == 'refresh':
-            body['refresh-token'] = self._get_token('refresh_token')
-        else:
-            # ask user for crendentials before making login request
-            user_name, pwd = self._get_credentials()
-            body['email'] = user_name
-            body['password'] = pwd
+        # Grab tokens from pytket and save to keychain
+        id_token = self.pytket_backend.api_handler._cred_store._id_token
+        refresh_token = self.pytket_backend.api_handler._cred_store.refresh_token
+        self._save_tokens(id_token, refresh_token)
 
-            # clear credentials
-            user_name = None
-            pwd = None
-
-        # send login request to API
-        status_code, message = self._request_tokens(body)
-
-        if status_code != HTTPStatus.OK:
-            # check if we got an error because refresh token has expired
-            if status_code in (HTTPStatus.FORBIDDEN, HTTPStatus.BAD_REQUEST):
-                print(message.get('error', {}).get('text', 'Request forbidden'))
-
-                # ask user for credentials to login again
-                user_name, pwd = self._get_credentials()
-                body['email'] = user_name
-                body['password'] = pwd
-
-                # send login request to API
-                status_code, message = self._request_tokens(body)
-
-        if status_code != HTTPStatus.OK:
-            raise RuntimeError('HTTP error while logging in:', status_code)
+        return id_token
 
     def _get_token(self, token_name: str):
         """ Method to retrieve id and refresh tokens from system's keyring service.
@@ -267,29 +220,11 @@ class Credentials:
         and returns it, otherwise it gets a new one with refresh-token.
         If refresh-token doesn't exist, it asks user for credentials.
         """
-        # check if id_token exists
         id_token = self._get_token('id_token')
-        if id_token is None:
-            # authenticate against '/login' endpoint
-            self._authenticate()
 
-            # get id_token
-            id_token = self._get_token('id_token')
-
-        # check id_token is not expired yet
-        expiration_date = jwt.decode(id_token, verify=False, algorithms=["RS256"])['exp']
-        if expiration_date < (datetime.datetime.now(datetime.timezone.utc).timestamp()):
-            print("Your id token is expired. Refreshing...")
-
-            # get refresh_token
-            self.refresh_token = self._get_token('refresh_token')
-            if self.refresh_token is not None:
-                self._authenticate('refresh')
-            else:
-                self._authenticate()
-
-            # get id_token
-            id_token = self._get_token('id_token')
+        # If is_token is missing or expired call auth
+        if id_token is None or self._token_is_expired(id_token):
+            id_token = self._authenticate()
 
         return id_token
 
@@ -305,8 +240,6 @@ class Credentials:
 
         for k, v in {'user_name': self.user_name, 'api_url': _API_URL}.items():
             setattr(self, k, config_parser.get(SECTION_NAME, k, fallback=v))
-        setattr(self, 'proxies',
-                json.loads(config_parser.get(SECTION_NAME, 'proxies', fallback='{}')))
 
     def load_config(self, filename=DEFAULT_QISKITRC_FILE):
         """ Read credential information from file """
@@ -329,7 +262,6 @@ class Credentials:
         if not config_parser.has_section(SECTION_NAME):
             config_parser[SECTION_NAME] = {}
         for k, v in {'user_name': self.user_name,
-                     'proxies': self.proxies,
                      'api_url': str(self.api_url)}.items():
             if k not in config_parser[SECTION_NAME] or not overwrite:
                 if isinstance(v, dict):
@@ -343,3 +275,24 @@ class Credentials:
     def remove_creds(self):
         """ Remove access/refresh tokens from keyring """
         self._delete_tokens()
+
+    def _token_is_expired(self, id_token):
+        """ Checks if id token is valid """
+        is_expired = False
+        try:
+            jwt_options = {'verify_aud': False, 'verify_signature': False}
+            expiration_date = jwt.decode(id_token, options=jwt_options, algorithms=["RS256"])['exp']
+            if expiration_date < (datetime.datetime.now(datetime.timezone.utc).timestamp()):
+                print("Your id token is expired. Refreshing...")
+                is_expired = True
+
+        except jwt.ExpiredSignatureError:
+            print('Your id token is expired. Refreshing...')
+            is_expired = True
+        except jwt.InvalidTokenError as ex:
+            # catch any other error and prompt login retry
+            print(ex)
+            print('Error processing your id token. Refreshing...')
+            is_expired = True
+
+        return is_expired

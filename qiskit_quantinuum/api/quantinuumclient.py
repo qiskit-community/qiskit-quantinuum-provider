@@ -81,8 +81,7 @@ class QuantinuumClient:
         if credentials:
             self.credentials = credentials
         self.client_api = Api(RetrySession(service_url,
-                                           credentials=self.credentials,
-                                           proxies=self.credentials.proxies))
+                                           credentials=self.credentials))
 
     # Backend-related public functions.
     def list_backends(self):

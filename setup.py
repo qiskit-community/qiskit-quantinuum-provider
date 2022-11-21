@@ -35,8 +35,10 @@ requirements = [
     'qiskit-terra>=0.16.0',
     'requests>=2.19',
     'websockets>=7',
-    'pyjwt>=1.7.1,<2',
+    'pyjwt>=2.4.0',
     'keyring>=10.6.0',
+    'pytket>=0.3.0',
+    'pytket-quantinuum>=0.9.0'
 ]
 
 version_path = os.path.abspath(os.path.join(
