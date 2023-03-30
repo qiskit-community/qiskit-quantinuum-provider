@@ -58,7 +58,7 @@ setuptools.setup(
     url="https://github.com/qiskit-community/qiskit-quantinuum-provider",
     packages=setuptools.find_namespace_packages(include=['qiskit.*']),
     install_requires=requirements,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     include_package_data=True,
     keywords="qiskit quantum",
     project_urls={
@@ -75,10 +75,11 @@ setuptools.setup(
         "Operating System :: MacOS",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Scientific/Engineering"
     ],
     zip_safe=False,
