@@ -64,7 +64,7 @@ class QuantinuumBackendTestCase(QiskitTestCase):
         self.circuit.h(0)
         self.circuit.cx(0, 1)
         self.circuit.h(0)
-        self.circuit.cu1(1.0, 0, 1)
+        self.circuit.cp(1.0, 0, 1)
         self.circuit.toffoli(0, 1, 2)
         self.circuit.toffoli(1, 2, 3)
         self.circuit.x(0)
@@ -86,8 +86,8 @@ class QuantinuumBackendTestCase(QiskitTestCase):
         self.circuit.crz(1.0, 0, 1)
         self.circuit.crx(1.0, 0, 1)
         self.circuit.cry(1.0, 0, 1)
-        self.circuit.cu1(1.0, 0, 1)
-        self.circuit.cu3(1.0, 2.0, 3.0, 0, 1)
+        self.circuit.cp(1.0, 0, 1)
+        self.circuit.cu(1.0, 2.0, 3.0, 0.0, 0, 1)
         self.circuit.measure_all()
 
     def test_configuration(self):
