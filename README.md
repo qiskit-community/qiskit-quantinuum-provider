@@ -79,22 +79,6 @@ result = execute(qc, backend).result()
 print(result.get_counts(qc))
 ```
 
-## Using a proxy
-
-To configure a proxy include it in the save account configuration:
-
-```python3
-Quantinuum.save_account('username@company.com', proxies = {'urls': {'http': 'http://user:password@myproxy:8080', 'https': 'http://user:password@myproxy:8080'}})
-```
-
-To remove the proxy you can save with an empty dictionary:
-
-```python3
-Quantinuum.save_account('username@company.com', proxies = {})
-```
-
-The 'urls' field must be a dictionary that maps a protocol type or url to a specific proxy.  Additional information/details can be found [here](https://requests.readthedocs.io/en/master/user/advanced/#proxies).
-
 ## License
 
 [Apache License 2.0].

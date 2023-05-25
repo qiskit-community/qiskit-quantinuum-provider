@@ -29,6 +29,7 @@
 import logging
 from collections import OrderedDict
 
+from pytket.extensions import quantinuum
 from qiskit.providers import ProviderV1
 from qiskit.providers.models import BackendConfiguration
 
@@ -54,30 +55,30 @@ class QuantinuumProvider(ProviderV1):
 
         # Populate the list of remote backends.
         self._backends = None
-        self.credentials = Credentials()
+        self.pytket_backend = quantinuum.QuantinuumBackend(device_name='')
+        self.credentials = Credentials(self.pytket_backend)
 
     def load_account(self):
         """ Obtain stored credentials """
-        self.credentials = Credentials()
+        self.pytket_backend = quantinuum.QuantinuumBackend(device_name='')
+        self.credentials = Credentials(self.pytket_backend)
 
         if not self.credentials.user_name or not self.credentials.access_token:
             raise QuantinuumCredentialsNotFound
 
-        self._api = QuantinuumClient(credentials=self.credentials,
-                                     proxies=self.credentials.proxies)
+        self._api = QuantinuumClient(credentials=self.credentials)
 
         self._api.authenticate()
 
     def save_account(self,
                      user_name: str,
-                     proxies: dict = None,
                      overwrite=False,
                      filename=None,
                      api_url: str = None):
         """ Save the credentials onto disk """
-        self.credentials = Credentials(user_name, proxies, api_url)
-        self._api = QuantinuumClient(credentials=self.credentials,
-                                     proxies=self.credentials.proxies)
+        self.pytket_backend = quantinuum.QuantinuumBackend(device_name='')
+        self.credentials = Credentials(self.pytket_backend, user_name, api_url)
+        self._api = QuantinuumClient(credentials=self.credentials)
         self._api.authenticate()
         if filename:
             self.credentials.save_config(filename=filename, overwrite=overwrite)

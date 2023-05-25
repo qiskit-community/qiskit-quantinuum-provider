@@ -17,6 +17,7 @@
 """Test credentials."""
 
 from unittest import mock
+from pytket.extensions import quantinuum
 
 from qiskit.test import QiskitTestCase
 
@@ -29,8 +30,9 @@ class TestCredentials(QiskitTestCase):
     @mock.patch.object(Credentials, '_login',
                        return_value=None)
     def test_credentials_no_creds(self, login_mock):
+        pytket_backend = quantinuum.QuantinuumBackend(device_name='')
         self.assertEqual(None,
-                         Credentials().access_token)
+                         Credentials(pytket_backend).access_token)
         login_mock.assert_called_once_with()
 
     def test_credentials_valid_urls(self):

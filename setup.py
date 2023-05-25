@@ -35,8 +35,10 @@ requirements = [
     'qiskit-terra>=0.16.0',
     'requests>=2.19',
     'websockets>=7',
-    'pyjwt>=1.7.1,<2',
+    'pyjwt>=2.4.0',
     'keyring>=10.6.0',
+    'pytket>=0.3.0',
+    'pytket-quantinuum>=0.9.0'
 ]
 
 version_path = os.path.abspath(os.path.join(
@@ -58,7 +60,7 @@ setuptools.setup(
     url="https://github.com/qiskit-community/qiskit-quantinuum-provider",
     packages=setuptools.find_namespace_packages(include=['qiskit.*']),
     install_requires=requirements,
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     include_package_data=True,
     keywords="qiskit quantum",
     project_urls={
@@ -75,7 +77,6 @@ setuptools.setup(
         "Operating System :: MacOS",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
