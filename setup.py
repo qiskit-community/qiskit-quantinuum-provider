@@ -58,7 +58,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url="https://github.com/qiskit-community/qiskit-quantinuum-provider",
-    packages=setuptools.find_namespace_packages(include=['qiskit.*']),
+    packages=setuptools.find_namespace_packages(include=['qiskit_quantinuum*']),
     install_requires=requirements,
     python_requires=">=3.8",
     include_package_data=True,
