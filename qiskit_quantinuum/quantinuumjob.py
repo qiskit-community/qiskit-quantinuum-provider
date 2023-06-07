@@ -368,7 +368,7 @@ class QuantinuumJob(JobV1):
             }
             if self._circuits_job:
                 experiment_result['header'] = {} if self._experiments[i].metadata is None
-                        else self._experiments[i].metadata
+                    else self._experiments[i].metadata
             else:
                 experiment_result['header'] = self._qobj_payload[
                     'experiments'][i]['header'] if self._qobj_payload else {}
