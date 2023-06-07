@@ -336,7 +336,7 @@ class QuantinuumJob(JobV1):
         for i, res_resp in enumerate(self._experiment_results):
             if type(res_resp) is JobStatus:
                 self._status = res_resp
-                break
+                continue
             status = res_resp.get('status', 'failed')
             if status == 'failed':
                 self._status = JobStatus.ERROR
