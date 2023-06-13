@@ -345,7 +345,7 @@ class QuantinuumJob(JobV1):
                 }
 
                 if self._circuits_job:
-                    if len(self._experiments) >= i or self._experiments[i].metadata is None:
+                    if len(self._experiments) <= i or self._experiments[i].metadata is None:
                         metadata = {}
                     else:
                         metadata = self._experiments[i].metadata
