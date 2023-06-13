@@ -353,7 +353,6 @@ class QuantinuumJob(JobV1):
                 else:
                     experiment_result['header'] = self._qobj_payload[
                     'experiments'][i]['header'] if self._qobj_payload else {}
-
                 results.append(experiment_result)
 
                 continue
@@ -379,7 +378,6 @@ class QuantinuumJob(JobV1):
             else:
                 experiment_result['header'] = self._qobj_payload[
                     'experiments'][i]['header'] if self._qobj_payload else {}
-
             results.append(experiment_result)
 
         result = {
