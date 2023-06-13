@@ -339,17 +339,16 @@ class QuantinuumJob(JobV1):
 
                 experiment_result = {
                     'shots': self._job_config.get('shots', 1),
-                    'success': False,
+                    'success': res_resp != JobStatus.ERROR,
                     'data': {'counts': {}},
-                    'job_id': self._job_ids[i]
+                    'job_id': self._job_id
                 }
 
                 if self._circuits_job:
-                    experiment_result['header'] = {} if self._experiments[i].metadata is None
-                        else self._experiments[i].metadata
+                    experiment_result['header'] = {} if len(self._experiments) >= i or self._experiments[i].metadata is None else self._experiments[i].metadata
                 else:
-                    experiment_result['header'] =
-                        self._qobj_payload['experiments'][i]['header'] if self._qobj_payload else {}
+                    experiment_result['header'] = self._qobj_payload['experiments'][i]['header'] if self._qobj_payload else {}
+
                 results.append(experiment_result)
 
                 continue
@@ -367,11 +366,10 @@ class QuantinuumJob(JobV1):
                 'job_id': self._job_ids[i]
             }
             if self._circuits_job:
-                experiment_result['header'] = {} if self._experiments[i].metadata is None
-                    else self._experiments[i].metadata
+                experiment_result['header'] = {} if self._experiments[i].metadata is None else self._experiments[i].metadata
             else:
-                experiment_result['header'] = self._qobj_payload[
-                    'experiments'][i]['header'] if self._qobj_payload else {}
+                experiment_result['header'] = self._qobj_payload['experiments'][i]['header'] if self._qobj_payload else {}
+
             results.append(experiment_result)
 
         result = {
