@@ -334,6 +334,29 @@ class QuantinuumJob(JobV1):
         results = []
         self._status = JobStatus.DONE
         for i, res_resp in enumerate(self._experiment_results):
+            if isinstance(res_resp, JobStatus):
+                self._status = res_resp
+
+                experiment_result = {
+                    'shots': self._job_config.get('shots', 1),
+                    'success': res_resp != JobStatus.ERROR,
+                    'data': {'counts': {}},
+                    'job_id': self._job_id
+                }
+
+                if self._circuits_job:
+                    if len(self._experiments) <= i or self._experiments[i].metadata is None:
+                        metadata = {}
+                    else:
+                        metadata = self._experiments[i].metadata
+                    experiment_result['header'] = metadata
+                else:
+                    experiment_result['header'] = self._qobj_payload[
+                        'experiments'][i]['header'] if self._qobj_payload else {}
+                results.append(experiment_result)
+
+                continue
+
             status = res_resp.get('status', 'failed')
             if status == 'failed':
                 self._status = JobStatus.ERROR
