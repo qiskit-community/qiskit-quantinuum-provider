@@ -334,7 +334,7 @@ class QuantinuumJob(JobV1):
         results = []
         self._status = JobStatus.DONE
         for i, res_resp in enumerate(self._experiment_results):
-            if type(res_resp) is JobStatus:
+            if isinstance(res_resp, JobStatus):
                 self._status = res_resp
 
                 experiment_result = {
@@ -352,7 +352,7 @@ class QuantinuumJob(JobV1):
                     experiment_result['header'] = metadata
                 else:
                     experiment_result['header'] = self._qobj_payload[
-                    'experiments'][i]['header'] if self._qobj_payload else {}
+                        'experiments'][i]['header'] if self._qobj_payload else {}
                 results.append(experiment_result)
 
                 continue
