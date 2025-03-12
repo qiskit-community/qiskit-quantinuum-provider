@@ -6,7 +6,8 @@
 
 # EOL
 
-*** Qiskit Quantinuum provider is no longer actively maintained / supported. ***
+***Qiskit Quantinuum provider is no longer actively maintained / supported.***
+
 Qiskit submission to Quantinuum systems is supported by [pytket](https://docs.quantinuum.com/systems/trainings/getting_started/access_systems_with_qiskit.html#).
 
 
