@@ -1,11 +1,17 @@
+# PROJECT NO LONGER MAINTAINED
+
+***Qiskit Quantinuum provider is no longer actively maintained / supported.***
+
+Qiskit submission to Quantinuum systems is fully supported by [pytket](https://docs.quantinuum.com/systems/trainings/getting_started/access_systems_with_qiskit.html#).
+
+
 # Qiskit Quantinuum Provider
 
 [![License](https://img.shields.io/github/license/qiskit-community/qiskit-quantinuum-provider.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)[![Build Status](https://img.shields.io/travis/com/qiskit-community/qiskit-quantinuum-provider/master.svg?style=popout-square)](https://travis-ci.com/qiskit-community/qiskit-quantinuum-provider)[![](https://img.shields.io/github/release/qiskit-community/qiskit-quantinuum-provider.svg?style=popout-square)](https://github.com/qiskit-community/qiskit-quantinuum-provider/releases)[![](https://img.shields.io/pypi/dm/qiskit-quantinuum-provider.svg?style=popout-square)](https://pypi.org/project/qiskit-quantinuum-provider/)
 
 **Qiskit** is an open-source framework for working with noisy quantum computers at the level of pulses, circuits, and algorithms.
 
-This project contains a provider that allows access to Quantinuum quantum
-devices.
+This project contains a provider that allows access to Quantinuum quantum devices
 
 ## Installation
 
